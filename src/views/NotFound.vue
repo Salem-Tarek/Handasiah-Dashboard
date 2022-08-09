@@ -1,23 +1,23 @@
 <template>
-  <div class="home">
-    <h1 class="display-4">Home Page</h1>
+  <div class="notFound">
+    <v-container>
+      <h1>Not Found</h1>
+      <p>
+        Oops, We couldn't find that page. Go To 
+        <router-link to="/">HOME</router-link>
+      </p>
+    </v-container>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Home",
-  // beforeRouteLeave(to, from, next){
-  //   // let theRoutes = this.$router.options.routes;
-  //   console.log(from);
-  //   next()
-  // }
+  name: "NotFound"
 }
-
 </script>
 
 <style>
-.home {
+/* .notFound {
     width: 100vw;
     height: calc(100vh - 65px);
     background-color:#E2E2E2;
@@ -25,5 +25,5 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-}
+} */
 </style>
