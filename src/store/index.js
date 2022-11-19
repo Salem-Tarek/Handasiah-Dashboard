@@ -1,31 +1,58 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import axios from 'axios';
 
 Vue.use(Vuex);
-let existInLocalStorage = localStorage.getItem('loggedInForDashboard');
+
 export default new Vuex.Store({
   state: {
-    loggedIn: (existInLocalStorage === "true") || false
+    user: localStorage.getItem('userToken') || null,
+    lang: "en",
   },
-  getters: {
-    isLogged : state => state.loggedIn
+  getters:{
+    isLogged(state){
+      if(state.user !== '' && state.user !== null){
+        return true
+      }else{
+        return false
+      }
+    } 
   },
   mutations: {
-    userLogIn: state => {
-      state.loggedIn = true;
-      localStorage.setItem('loggedInForDashboard', state.loggedIn)
+    toggleLang: state => {
+      if(state.lang === "en"){
+        state.lang = "ar"
+      }else{
+        state.lang = "en"
+      }
     },
-    userLogOut: state => {
-      state.loggedIn = false
-      localStorage.removeItem('loggedInForDashboard')
+    setUser(state, token){
+      state.user = token
+    },
+    logOut(state){
+      state.user = null;
+      alert('Logged Out')
     },
   },
   actions: {
+    toggleLang({commit}){
+      commit('toggleLang')
+    },
     userLogIn({commit}){
       commit("userLogIn")
     },
     userLogOut({commit}){
-      commit("userLogOut")
-    }
+      commit("logOut")
+    },
+    async LogIn(context, user) {
+      const res = await axios.post('/dashboard/login', user);
+      if(res.status === 200){
+        await context.commit('setUser', res.data.data.accessToken);
+        alert('Logged in Successfully')
+      }else{
+        alert("Email or Password incorrect")
+      }
+      localStorage.setItem('userToken', res.data.data.accessToken)
+    },
   },
 });

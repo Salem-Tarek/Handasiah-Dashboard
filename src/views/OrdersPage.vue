@@ -19,7 +19,7 @@ export default {
     if(router.getters.isLogged){
       next()
     }else{
-      next("/")
+      next("/login")
       alert("You Have To LogIn First")
     }
   },

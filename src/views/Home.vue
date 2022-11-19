@@ -7,11 +7,6 @@
 <script>
 export default {
   name: "Home",
-  // beforeRouteLeave(to, from, next){
-  //   // let theRoutes = this.$router.options.routes;
-  //   console.log(from);
-  //   next()
-  // }
 }
 
 </script>
