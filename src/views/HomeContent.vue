@@ -11,11 +11,11 @@
                     <v-row>
                       <v-col cols="12">
                         <v-file-input v-model="sliderImages" label="صور السلايدر" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
-                        <template v-if="uploadedliderImages.length">
-                          <div class="mb-2 d-flex justify-space-between" v-for="img in uploadedliderImages" :key="img.lastModified">
+                        <template v-if="uploadedSliderImages.length">
+                          <div class="mb-2 d-flex justify-space-between" v-for="img in uploadedSliderImages" :key="img.lastModified">
                             <div class="imgPreview" :style="{ 'background-image': `url(${img.url})` }"></div>
                             <div class="actions">
-                              <v-icon class="red--text" @click="func(img.name)">mdi-delete</v-icon>
+                              <v-icon class="red--text" @click="deleteSliderImg(img.name)">mdi-delete</v-icon>
                             </div>
                           </div>
                         </template>
@@ -136,6 +136,14 @@
                     <v-row>
                       <v-col cols="12">
                         <v-file-input v-model="companiesImages" label="صور الشركات" show-size outlined chips multiple append-icon="mdi-camera"></v-file-input>
+                        <template v-if="uploadedCompaniesImages.length">
+                          <div class="mb-2 d-flex justify-space-between" v-for="img in uploadedCompaniesImages" :key="img.lastModified">
+                            <div class="imgPreview" :style="{ 'background-image': `url(${img.url})` }"></div>
+                            <div class="actions">
+                              <v-icon class="red--text" @click="deleteCompanyImg(img.name)">mdi-delete</v-icon>
+                            </div>
+                          </div>
+                        </template>
                       </v-col>
                     </v-row>
                   </v-form>
@@ -186,7 +194,7 @@ export default {
     data(){
       return {
         sliderImages:[],
-        uploadedliderImages:[],
+        uploadedSliderImages:[],
         featuresData:{
           title_en: '',
           title_ar: '',
@@ -201,6 +209,7 @@ export default {
           content_ar: '',
         },
         companiesImages:[],
+        uploadedCompaniesImages:[],
         demoData:{
           content_en: '',
           content_ar: '',
@@ -219,23 +228,40 @@ export default {
       }
     },
     methods:{
-      func(imgName){
-        this.uploadedliderImages = this.uploadedliderImages.filter(img => img.name !== imgName)
+      deleteSliderImg(imgName){
+        this.uploadedSliderImages = this.uploadedSliderImages.filter(img => img.name !== imgName);
       },
-    },
-    watch:{
-      sliderImages(){
-        for(let img of this.sliderImages){
+      deleteCompanyImg(imgName){
+        this.uploadedCompaniesImages = this.uploadedCompaniesImages.filter(img => img.name !== imgName);
+      },
+      getImgsWithUrl(bindingArr, outputArr, nameInLocaleStorage){
+        for(let img of bindingArr){
           const reader = new FileReader();
           reader.addEventListener('load', () => {
             img.url = reader.result;
-            this.uploadedliderImages.push(img)
+            outputArr.push(img)
+            console.log(reader.result);
+            // Store This Array below in both localStorage and Store
+            localStorage.setItem(nameInLocaleStorage, JSON.stringify(outputArr.map((img) => img.url)))
           })
           reader.readAsDataURL(img);
-          this.sliderImages = [];
         }
+        bindingArr.splice(0,bindingArr.length)
+        document.activeElement.blur();
       }
-    }
+    },
+    watch:{
+      sliderImages(newVal){
+        if(newVal.length){
+          this.getImgsWithUrl(this.sliderImages, this.uploadedSliderImages, 'imgSlider')
+        }
+      },
+      companiesImages(newVal){
+        if(newVal.length){
+          this.getImgsWithUrl(this.companiesImages, this.uploadedCompaniesImages, 'companiesSlider')
+        }
+      },
+    },
 }
 </script>
 

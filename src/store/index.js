@@ -2,6 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from 'axios';
 
+import homePage from './modules/homePage'
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -55,4 +57,7 @@ export default new Vuex.Store({
       localStorage.setItem('userToken', res.data.data.accessToken)
     },
   },
+  modules: {
+    homePage,
+  }
 });

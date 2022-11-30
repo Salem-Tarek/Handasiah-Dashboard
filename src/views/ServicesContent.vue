@@ -4,13 +4,21 @@
     <v-expansion-panels>
         <v-expansion-panel>
           <v-expansion-panel-header class="font-weight-medium">
-            صور الميزة
+            صور الخدمة
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-form>
               <v-row>
                 <v-col cols="12">
-                  <v-file-input v-model="featData.featImages" label="صور الميزة" show-size outlined chips multiple append-icon="mdi-camera"></v-file-input>
+                  <v-file-input v-model="featImages" label="صور الخدمة" show-size outlined chips multiple append-icon="mdi-camera"></v-file-input>
+                  <template v-if="featData.uploadedFeatImages.length">
+                    <div class="mb-2 d-flex justify-space-between" v-for="img in featData.uploadedFeatImages" :key="img.lastModified">
+                      <div class="imgPreview" :style="{ 'background-image': `url(${img.url})` }"></div>
+                      <div class="actions">
+                        <v-icon class="red--text" @click="deleteServiceImg(img.name)">mdi-delete</v-icon>
+                      </div>
+                    </div>
+                  </template>
                 </v-col>
               </v-row>
             </v-form>
@@ -18,7 +26,7 @@
         </v-expansion-panel>
         <v-expansion-panel>
           <v-expansion-panel-header class="font-weight-medium">
-            عنوان الميزة
+            عنوان الخدمة
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-form>
@@ -47,7 +55,7 @@
         </v-expansion-panel>
         <v-expansion-panel>
           <v-expansion-panel-header class="font-weight-medium">
-            محتوى الميزة
+            محتوى الخدمة
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-form>
@@ -116,8 +124,9 @@ export default {
   name: "ServicesContent",
   data(){
     return {
+      featImages: [],
       featData:{
-        featImages: [],
+        uploadedFeatImages: [],
         title_en: '',
         title_ar: '',
         content_en: '',
@@ -137,7 +146,34 @@ export default {
 
       },
     }
-  }
+  },
+  methods:{
+    getImgsWithUrl(bindingArr, outputArr){
+      for(let img of bindingArr){
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+          img.url = reader.result;
+          outputArr.push(img)
+        })
+        reader.readAsDataURL(img);
+      }
+      bindingArr.splice(0,bindingArr.length)
+      // Images Uploaded Array Not showing 
+      // let test = [...outputArr]
+      // console.log(test);
+      document.activeElement.blur();
+    },
+    deleteServiceImg(imgName){
+      this.featData.uploadedFeatImages = this.featData.uploadedFeatImages.filter(img => img.name !== imgName);
+    },  
+  },
+  watch:{
+    featImages(newVal){
+      if(newVal.length){
+        this.getImgsWithUrl(this.featImages, this.featData.uploadedFeatImages)
+      }
+    },
+  },
 }
 </script>
 
