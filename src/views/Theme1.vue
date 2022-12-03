@@ -8,7 +8,7 @@
             <div class="py-5 px-3 card-content d-flex justify-center justify-sm-space-between">
               <v-card-title class="d-flex flex-column">
                 <span class="display-1 mb-2">15</span>
-                <span class="subtitle-1 font-weight-black white--text">Orders</span>
+                <span class="body-2 font-weight-black white--text">Orders</span>
               </v-card-title>
               <v-icon class="display-4 d-none d-sm-block">
                 mdi-briefcase-outline
@@ -27,7 +27,7 @@
             <div class="py-5 px-3 card-content d-flex justify-center justify-sm-space-between">
               <v-card-title class="d-flex flex-column">
                 <span class="display-1 mb-2">54%</span>
-                <span class="subtitle-1 font-weight-black white--text">Bounce Rate</span>
+                <span class="body-2 font-weight-black white--text">Bounce Rate</span>
               </v-card-title>
               <v-icon class="display-4 d-none d-sm-block">
                 mdi-poll
@@ -46,7 +46,7 @@
             <div class="py-5 px-3 card-content d-flex justify-center justify-sm-space-between">
               <v-card-title class="d-flex flex-column">
                 <span class="display-1 mb-2">44</span>
-                <span class="subtitle-2 font-weight-black white--text">User Registrations</span>
+                <span class="body-2 font-weight-black white--text">User Registrations</span>
               </v-card-title>
               <v-icon class="display-4 d-none d-sm-block">
                 mdi-account-plus
@@ -65,7 +65,7 @@
             <div class="py-5 px-3 card-content d-flex justify-center justify-sm-space-between">
               <v-card-title class="d-flex flex-column">
                 <span class="display-1 mb-2">65</span>
-                <span class="subtitle-1 font-weight-black white--text">Unique Visitors</span>
+                <span class="body-2 font-weight-black white--text">Unique Visitors</span>
               </v-card-title>
               <v-icon class="display-4 d-none d-sm-block">
                 mdi-chart-pie
@@ -105,18 +105,15 @@
           </v-card>
         </v-col>
       </v-row>
-      <TheFooter />
     </v-container>
   </div>
 </template>
 
 <script>
-import Doughnut from '../components/chartss/Doughnut.vue'
-import Bars from '../components/chartss/Bars.vue'
-import Pie from '../components/chartss/Pie.vue'
-import LineChart from '../components/chartss/LineChart.vue'
-import TheFooter from '../components/layout/TheFooter.vue'
-import router from '../store/index.js'
+import Doughnut from '../components/chartss/Doughnut.vue';
+import Bars from '../components/chartss/Bars.vue';
+import Pie from '../components/chartss/Pie.vue';
+import LineChart from '../components/chartss/LineChart.vue';
 
 export default {
   name: "Theme1",
@@ -125,15 +122,6 @@ export default {
     Bars,
     Pie,
     LineChart,
-    TheFooter
-  },
-  beforeRouteEnter(to, from, next){
-    if(router.getters.isLogged){
-      next()
-    }else{
-      next("/")
-      alert("You Have To LogIn First")
-    }
   },
 };
 </script>
