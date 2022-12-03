@@ -4,7 +4,7 @@
         <v-expansion-panels>
             <v-expansion-panel>
               <v-expansion-panel-header class="font-weight-medium">
-                السلايدر
+                <h4>السلايدر</h4>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-form>
@@ -21,64 +21,23 @@
                         </template>
                       </v-col>
                     </v-row>
-                  </v-form>
+                </v-form>
               </v-expansion-panel-content>
             </v-expansion-panel>
             <v-expansion-panel>
                 <v-expansion-panel-header class="font-weight-medium">
-                  المزايا
+                  <h4>المزايا</h4>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <v-form>
-                      <v-row>
-                        <v-col cols="12" md="6" class="pb-0">
-                            <v-text-field
-                            v-model="featuresData.title_en"
-                            :rules="title_content.title"
-                            outlined
-                            label="العنوان الانجليزى"
-                            required
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" class="pb-0">
-                            <v-text-field
-                            v-model="featuresData.title_ar"
-                            :rules="title_content.title"
-                            outlined
-                            label="العنوان العربى"
-                            required
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" md="6" class="pb-0">
-                          <v-textarea
-                            v-model="featuresData.content_en"
-                            :rules="title_content.content"
-                            outlined
-                            no-resize
-                            name="input-7-4"
-                            label="المحتوى الانجليزى"
-                          ></v-textarea>
-                        </v-col>
-                        <v-col cols="12" md="6" class="pb-0">
-                          <v-textarea
-                            v-model="featuresData.content_ar"
-                            :rules="title_content.content"
-                            outlined
-                            no-resize
-                            name="input-7-4"
-                            label="المحتوى العربى"
-                          ></v-textarea>
-                        </v-col>
-                        <v-col cols="12">
-                          <v-file-input v-model="featuresData.icon" label="صورة الميزة" show-size outlined chips append-icon="mdi-camera"></v-file-input>
-                        </v-col>
-                      </v-row>
-                  </v-form>
+                  <template v-for="n in featsCount">
+                    <Fearure ref="FeatureComponent" :featNum="n" :key="n" />
+                  </template>
+                  <v-btn depressed class="AddFeat" @click="testing()">أضف ميزة</v-btn>
               </v-expansion-panel-content>
             </v-expansion-panel>
             <v-expansion-panel>
                 <v-expansion-panel-header class="font-weight-medium">
-                  عننا
+                  <h4>عننا</h4>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-form>
@@ -129,7 +88,7 @@
             </v-expansion-panel>
             <v-expansion-panel>
                 <v-expansion-panel-header class="font-weight-medium">
-                  شركات تم العمل معها
+                  <h4>شركات تم التعامل معها</h4>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-form>
@@ -151,7 +110,7 @@
             </v-expansion-panel>
             <v-expansion-panel>
                 <v-expansion-panel-header class="font-weight-medium">
-                  محتوى الفيديو
+                  <h4>محتوى الفيديو</h4>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-form>
@@ -185,23 +144,16 @@
 </template>
 
 <script>
-// import Test from '../components/Test.vue'
+import Fearure from '../components/Fearure.vue'
 export default {
     name: "HomeContent",
     components:{
-      // Test,
+      Fearure,
     },
     data(){
       return {
         sliderImages:[],
         uploadedSliderImages:[],
-        featuresData:{
-          title_en: '',
-          title_ar: '',
-          content_en: '',
-          content_ar: '',
-          icon: []
-        },
         aboutData:{
           mission_en: '',
           mission_ar: '',
@@ -217,14 +169,14 @@ export default {
         title_content: {
           title:[
             v => !!v || 'العنوان مطلوب',
-            v => v.length <= 10 || 'Title must contain only characters',
           ],
           content:[
             v => !!v || 'المحتوى مطلوب',
-            v => v.length <= 10 || 'Content must contain only characters',
           ],
 
         },
+        featsCount: 1,
+        features: [],
       }
     },
     methods:{
@@ -248,7 +200,21 @@ export default {
         }
         bindingArr.splice(0,bindingArr.length)
         document.activeElement.blur();
-      }
+      },
+      testing(){
+        this.featsCount++;
+        let currentComponent = this.$refs.FeatureComponent.length - 1;
+        let currentComponentData = this.$refs.FeatureComponent[currentComponent]._data.featuresData;
+        for(let val in currentComponentData){
+          if(!currentComponentData[val]){
+            console.log("There Is Empty Here");
+          }else{
+            this.features.push(currentComponentData)
+            // Store this Array in both LocalStorage and Store of Vuex
+            return
+          }
+        }
+      },
     },
     watch:{
       sliderImages(newVal){
@@ -274,5 +240,12 @@ export default {
   width: 50px;
   height: 50px;
   background-size: contain;
+}
+
+.AddFeat{
+  background-color: #0057a8 !important;
+  color: #FFF !important;
+  letter-spacing: 0 !important;
+  font-weight: bold;
 }
 </style>
