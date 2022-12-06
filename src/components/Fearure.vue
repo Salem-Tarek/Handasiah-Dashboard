@@ -42,7 +42,7 @@
               ></v-textarea>
             </v-col>
             <v-col cols="12">
-              <v-text-field v-model="featuresData.icon" label="صورة الميزة" outlined></v-text-field>
+              <v-text-field v-model="featuresData.icon" label="أيقونة الميزة" outlined></v-text-field>
             </v-col>
           </v-row>
       </v-form>
@@ -77,6 +77,14 @@
         ],
       },
     }),
+    watch:{
+      featuresData:{
+        handler(){
+            this.$emit('featuresDataChanged')
+        },
+        deep: true
+      }
+    }
   }
 </script>
 

@@ -30,9 +30,9 @@
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <template v-for="n in featsCount">
-                    <Fearure ref="FeatureComponent" :featNum="n" :key="n" />
+                    <Fearure @featuresDataChanged="getFeatureData()" ref="FeatureComponent" :featNum="n" :key="n" />
                   </template>
-                  <v-btn depressed class="AddFeat" @click="testing()">أضف ميزة</v-btn>
+                  <v-btn depressed class="AddFeat" @click="featsCount++">أضف ميزة</v-btn>
               </v-expansion-panel-content>
             </v-expansion-panel>
             <v-expansion-panel>
@@ -115,7 +115,7 @@
                 <v-expansion-panel-content>
                   <v-form>
                       <v-row>
-                        <v-col cols="12" md="6">
+                        <v-col cols="12" class="pb-0" md="6">
                           <v-textarea
                             v-model="demoData.content_en"
                             :rules="title_content.content"
@@ -125,7 +125,7 @@
                             label="المحتوى الانجليزى"
                           ></v-textarea>
                         </v-col>
-                        <v-col cols="12" md="6">
+                        <v-col cols="12" class="pb-0" md="6">
                           <v-textarea
                             v-model="demoData.content_ar"
                             :rules="title_content.content"
@@ -134,6 +134,14 @@
                             name="input-7-4"
                             label="المحتوى العربى"
                           ></v-textarea>
+                        </v-col>
+                        <v-col cols="12" class="pb-0">
+                          <v-text-field
+                          v-model="demoData.link"
+                          outlined
+                          label="لينك الفيديو"
+                          required
+                          ></v-text-field>
                         </v-col>
                       </v-row>
                   </v-form>
@@ -165,6 +173,7 @@ export default {
         demoData:{
           content_en: '',
           content_ar: '',
+          link: '',
         },
         title_content: {
           title:[
@@ -201,20 +210,9 @@ export default {
         bindingArr.splice(0,bindingArr.length)
         document.activeElement.blur();
       },
-      testing(){
-        this.featsCount++;
-        let currentComponent = this.$refs.FeatureComponent.length - 1;
-        let currentComponentData = this.$refs.FeatureComponent[currentComponent]._data.featuresData;
-        for(let val in currentComponentData){
-          if(!currentComponentData[val]){
-            console.log("There Is Empty Here");
-          }else{
-            this.features.push(currentComponentData)
-            // Store this Array in both LocalStorage and Store of Vuex
-            return
-          }
-        }
-      },
+      getFeatureData(){
+        this.features = this.$refs.FeatureComponent.map((comp) => comp.$data.featuresData);
+      }
     },
     watch:{
       sliderImages(newVal){

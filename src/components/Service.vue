@@ -133,6 +133,12 @@ export default {
                 this.getImgsWithUrl(this.serviceImages, this.serviceData.uploadedServiceImages)
             }
         },
+        serviceData:{
+            handler(){
+                this.$emit('serviceDataChanged')
+            },
+            deep: true
+        }
     },
 }
 </script>
