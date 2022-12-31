@@ -87,7 +87,14 @@
             this.$emit('featuresDataChanged')
         },
         deep: true
-      }
+      },
+      featData:{
+        handler(){
+          this.$emit('featDataPropChanged')
+        },
+        deep: true
+      },
+
     },
     computed: {
       isFeatDataExist(){

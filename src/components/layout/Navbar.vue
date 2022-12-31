@@ -17,6 +17,20 @@
             <v-divider></v-divider>
         </v-list>
         <v-list class="pt-0 navigation">
+            <v-subheader>الإعدادت</v-subheader>
+            <!-- <v-list-item-group v-model="selected"> -->
+                <v-list-item class="px-0">
+                    <router-link to="/setting" class="d-flex px-4">
+                        <v-list-item-icon>
+                            <v-icon v-text="'mdi-cog'"></v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title v-text="'الإعدادات'"></v-list-item-title>
+                        </v-list-item-content>
+                    </router-link>
+                </v-list-item>
+            <!-- </v-list-item-group> -->
+
             <v-subheader>الصفحات</v-subheader>
             <!-- <v-list-item-group v-model="selected"> -->
                 <v-list-item v-for="(page, i) in pagesList" :key="i" class="px-0">
@@ -30,6 +44,7 @@
                     </router-link>
                 </v-list-item>
             <!-- </v-list-item-group> -->
+            
         </v-list>
     </v-navigation-drawer>
 
@@ -128,25 +143,6 @@ export default {
             localStorage.removeItem('userToken')
             this.$router.push('/login');
         },
-        logInFunc(){
-            if (this.$refs.form.validate()){
-                for(let logInUser of this.logInUsers){
-                    if(this.email === logInUser.email && this.password === logInUser.password){
-                        let theToken = logInUser.token;
-                        this.userLogIn()
-                        this.dialog = false;
-                        this.$router.push('/dashboard-theme1')
-                        this.email = "";
-                        this.password = "";
-                        console.log(theToken);
-                        return true
-                    }else{
-                        alert("Email or Password in inCorrect !!")
-                        return false
-                    }
-                }
-            }
-        }
     }
 }
 </script>
