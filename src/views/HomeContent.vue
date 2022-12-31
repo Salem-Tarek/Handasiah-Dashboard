@@ -7,18 +7,19 @@
                 <h4>السلايدر</h4>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <v-form>
+                <v-form ref="sliderRef">
                     <v-row>
                       <v-col cols="12">
-                        <v-file-input v-model="sliderImages" label="صور السلايدر" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
-                        <template v-if="uploadedSliderImages.length">
-                          <div class="mb-2 d-flex justify-space-between" v-for="img in uploadedSliderImages" :key="img.lastModified">
-                            <div class="imgPreview" :style="{ 'background-image': `url(${img.url})` }"></div>
+                        <v-file-input v-model="slider.sliderImages" label="صور السلايدر" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
+                        <template v-if="slider.uploadedSliderImages.length">
+                          <div class="mb-2 d-flex justify-space-between" v-for="img in slider.uploadedSliderImages" :key="img.lastModified">
+                            <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
                             <div class="actions">
-                              <v-icon class="red--text" @click="deleteSliderImg(img.name)">mdi-delete</v-icon>
+                              <v-icon class="red--text" @click="deleteSliderImg(img)">mdi-delete</v-icon>
                             </div>
                           </div>
                         </template>
+                        <v-btn depressed color="success" @click="submitSliderImgsFunc()" class="noLetterSpace mt-3">حفظ صور السلايدر</v-btn>
                       </v-col>
                     </v-row>
                 </v-form>
@@ -29,10 +30,27 @@
                   <h4>المزايا</h4>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <template v-for="n in featsCount">
-                    <Fearure @featuresDataChanged="getFeatureData()" ref="FeatureComponent" :featNum="n" :key="n" />
+                  <!-- If There is no Features -->
+                  <template v-if="!getFeatures.length">
+                    <template v-for="n in featsCount">
+                      <Fearure :featData="null" @featuresDataChanged="getFeatureData()" ref="FeatureComponent" :featNum="n" :key="`feat${n}`" />
+                      <div class="divider w-100" :key="n"></div>
+                    </template>
                   </template>
-                  <v-btn depressed class="AddFeat" @click="featsCount++">أضف ميزة</v-btn>
+                  <!-- If There is Features -->
+                  <template v-else>
+                    <template v-for="(feat, index) in getFeatures">
+                      <Fearure :featData="feat" @featuresDataChanged="getFeatureData()" ref="FeatureComponent" :featNum="index+1" :key="`getFeat${feat.id}`" />
+                      <div class="deleteFeat d-flex align-center justify-space-between makeGap" :key="feat.id">
+                        <div class="divider"></div>
+                        <v-btn depressed color="error" class="noLetterSpace" @click="deleteFeat(feat.id)">حذف الميزة</v-btn>
+                      </div>
+                    </template>
+                  </template>
+                  <div class="mt-3 d-flex makeGap">
+                    <v-btn depressed class="AddFeat noLetterSpace" @click="featsCount++">أضف ميزة</v-btn>
+                    <v-btn color="success" class="AddFeat noLetterSpace" @click="submitFeatures()">حفظ المميزات</v-btn>
+                  </div>
               </v-expansion-panel-content>
             </v-expansion-panel>
             <v-expansion-panel>
@@ -44,7 +62,7 @@
                       <v-row>
                         <v-col cols="12" md="6" class="pb-0">
                           <v-textarea
-                            v-model="aboutData.content_en"
+                            v-model="aboutData.descriptionEn"
                             :rules="title_content.content"
                             outlined
                             no-resize
@@ -54,7 +72,7 @@
                         </v-col>
                         <v-col cols="12" md="6" class="pb-0">
                           <v-textarea
-                            v-model="aboutData.content_ar"
+                            v-model="aboutData.descriptionAr"
                             :rules="title_content.content"
                             outlined
                             no-resize
@@ -64,7 +82,7 @@
                         </v-col>
                         <v-col cols="12" md="6" class="pb-0">
                           <v-textarea
-                            v-model="aboutData.mission_en"
+                            v-model="mission.descriptionEn"
                             :rules="title_content.content"
                             outlined
                             no-resize
@@ -74,13 +92,16 @@
                         </v-col>
                         <v-col cols="12" md="6" class="pb-0">
                           <v-textarea
-                            v-model="aboutData.mission_ar"
+                            v-model="mission.descriptionAr"
                             :rules="title_content.content"
                             outlined
                             no-resize
                             name="input-7-4"
                             label="المهمة العربى"
                           ></v-textarea>
+                        </v-col>
+                        <v-col cols="12">
+                          <v-btn color="success" @click="submitWords()">حفظ البيانات</v-btn>
                         </v-col>
                       </v-row>
                   </v-form>
@@ -94,15 +115,16 @@
                   <v-form>
                     <v-row>
                       <v-col cols="12">
-                        <v-file-input v-model="companiesImages" label="صور الشركات" show-size outlined chips multiple append-icon="mdi-camera"></v-file-input>
-                        <template v-if="uploadedCompaniesImages.length">
-                          <div class="mb-2 d-flex justify-space-between" v-for="img in uploadedCompaniesImages" :key="img.lastModified">
-                            <div class="imgPreview" :style="{ 'background-image': `url(${img.url})` }"></div>
+                        <v-file-input v-model="companies.currentCompanies" label="صور الشركات" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
+                        <template v-if="companies.uploadedCompaniesImages.length">
+                          <div class="mb-2 d-flex justify-space-between" v-for="img in companies.uploadedCompaniesImages" :key="img.lastModified">
+                            <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
                             <div class="actions">
-                              <v-icon class="red--text" @click="deleteCompanyImg(img.name)">mdi-delete</v-icon>
+                              <v-icon class="red--text" @click="deleteCompanyImg(img)">mdi-delete</v-icon>
                             </div>
                           </div>
                         </template>
+                        <v-btn color="success" @click="submitCompaniesFunc()" class="mt-3 noLetterSpace">حفظ صور الشركات</v-btn>
                       </v-col>
                     </v-row>
                   </v-form>
@@ -117,7 +139,7 @@
                       <v-row>
                         <v-col cols="12" class="pb-0" md="6">
                           <v-textarea
-                            v-model="demoData.content_en"
+                            v-model="demoData.descriptionEn"
                             :rules="title_content.content"
                             outlined
                             no-resize
@@ -127,7 +149,7 @@
                         </v-col>
                         <v-col cols="12" class="pb-0" md="6">
                           <v-textarea
-                            v-model="demoData.content_ar"
+                            v-model="demoData.descriptionAr"
                             :rules="title_content.content"
                             outlined
                             no-resize
@@ -143,6 +165,9 @@
                           required
                           ></v-text-field>
                         </v-col>
+                        <v-col cols="12">
+                          <v-btn color="success" @click="submitDemoData()" class="noLetterSpace">حفظ محتوى الفيديو</v-btn>
+                        </v-col>
                       </v-row>
                   </v-form>
                 </v-expansion-panel-content>
@@ -153,6 +178,8 @@
 
 <script>
 import Fearure from '../components/Fearure.vue'
+import axios from 'axios'
+
 export default {
     name: "HomeContent",
     components:{
@@ -160,21 +187,37 @@ export default {
     },
     data(){
       return {
-        sliderImages:[],
-        uploadedSliderImages:[],
-        aboutData:{
-          mission_en: '',
-          mission_ar: '',
-          content_en: '',
-          content_ar: '',
+        slider:{
+          sliderImages:[],
+          uploadedSliderImages:[],
+          existImgs: [],
         },
-        companiesImages:[],
-        uploadedCompaniesImages:[],
+        
+        featsCount: 1,
+        features: [],
+        getFeatures: [],
+
+        aboutData:{
+          descriptionEn: '',
+          descriptionAr: '',
+        },
+        mission:{
+          descriptionEn: '',
+          descriptionAr: '',
+        },
+
+        companies:{
+          currentCompanies:[],
+          uploadedCompaniesImages:[],
+          existImgs: [],
+        },
+
         demoData:{
-          content_en: '',
-          content_ar: '',
+          descriptionEn: '',
+          descriptionAr: '',
           link: '',
         },
+
         title_content: {
           title:[
             v => !!v || 'العنوان مطلوب',
@@ -184,52 +227,186 @@ export default {
           ],
 
         },
-        featsCount: 1,
-        features: [],
       }
     },
     methods:{
-      deleteSliderImg(imgName){
-        this.uploadedSliderImages = this.uploadedSliderImages.filter(img => img.name !== imgName);
+      // Slider Functions
+      async submitSliderImgsFunc(){
+        let fd = new FormData();
+        let uploadedImgs = [];
+        uploadedImgs = this.slider.existImgs.length ? [...this.slider.existImgs, ...this.slider.sliderImages] : [...this.slider.sliderImages];
+
+        for(let i = 0; i < uploadedImgs.length; i++){
+          fd.append(`Images[${i}][image]`, uploadedImgs[i].image || uploadedImgs[i])
+        }
+
+        if(this.slider.uploadedSliderImages.length > this.slider.existImgs.length){
+          const res = await axios.post('/dashboard/homePage/slider/save', fd);
+          console.log(res);
+          if(res.status === 200){
+            alert('Done')
+          }
+        }else{
+          alert('No Changes')
+        }
       },
-      deleteCompanyImg(imgName){
-        this.uploadedCompaniesImages = this.uploadedCompaniesImages.filter(img => img.name !== imgName);
+      async deleteSliderImg(img){
+        if(img.id){
+          const res = await axios.post('/dashboard/homePage/slider/delete', {id: img.id});
+          console.log(res);
+          alert('Done') 
+          if(res.status === 200){
+            this.getHomePageData();
+          }
+        }else{
+          let choosedImgIndexInSliderImagesArr = this.slider.uploadedSliderImages.length - this.slider.existImgs.length - 1;
+
+          this.slider.sliderImages.splice(choosedImgIndexInSliderImagesArr, 1);
+
+          this.slider.uploadedSliderImages = this.slider.uploadedSliderImages.filter(file => file.image !== img.image);
+        }
+      },
+
+      // Features functions
+      getFeatureData(){
+        this.features = this.$refs.FeatureComponent.map((comp) => comp.$data.featuresData);
+      },
+      async submitFeatures(){
+        const res = await axios.post('/dashboard/homePage/services/save', {Services: this.features});
+        if(res.status === 200){
+          alert('تم حفظ المميزات بنجاح')
+          this.getHomePageData();
+        }
+      },
+      async deleteFeat(id){
+        const res = await axios.post('/dashboard/homePage/services/delete', {id: id});
+        if(res.status === 200){
+          alert('تم حذف الميزة بنجاح')
+          this.getHomePageData();
+        }
+      },
+
+      // Aboutus Words Functions
+      async submitWords(){
+        const res = await axios.post('/dashboard/homePage/aboutSomeWords/save', this.aboutData);
+        const res2 = await axios.post('/dashboard/homePage/mission/save', this.mission);
+        console.log(res);
+        console.log(res2);
+      },
+      
+      // Companies functions
+      async submitCompaniesFunc(){
+        let fd = new FormData();
+        
+        this.uploadedImgs = this.companies.existImgs.length ? [...this.companies.existImgs, ...this.companies.currentCompanies] : [...this.companies.currentCompanies];
+
+        for(let i = 0; i < this.uploadedImgs.length; i++){
+          fd.append(`Images[${i}][image]`, this.uploadedImgs[i].image || this.uploadedImgs[i])
+        }
+
+        if(this.companies.uploadedCompaniesImages.length > this.companies.existImgs.length){
+          const res = await axios.post('/dashboard/aboutPage/companie/save', fd);
+          console.log(res);
+          if(res.status === 200){
+            alert('تم حفظ صور الشركات بنجاح')
+            this.getHomePageData();
+          }
+        }else{
+          alert('No Changes')
+        }
+      },
+      async deleteCompanyImg(img){
+        if(img.id){
+          const res = await axios.post('/dashboard/aboutPage/companie/delete', {id: img.id});
+          console.log(res);
+          if(res.status === 200){
+            alert('تم حذف صورة الشركه')
+            this.getHomePageData();
+          }
+        }else{
+          let choosedImgIndexInCompaniesImagesArr = this.companies.uploadedCompaniesImages.length - this.companies.existImgs.length - 1;
+
+          this.companies.currentCompanies.splice(choosedImgIndexInCompaniesImagesArr, 1);
+
+          this.companies.uploadedCompaniesImages = this.companies.uploadedCompaniesImages.filter(file => file.image !== img.image);
+        }
+      },
+
+      // Video Functions
+      async submitDemoData(){
+        const res = await axios.post('/dashboard/homePage/video/save', this.demoData);
+        console.log(res);
+      },
+
+      // General Functions
+      async getHomePageData(){
+        const res = await axios.get('/dashboard/homePage');
+        if(res.status === 200){
+          this.demoData = res.data.data.video;
+          this.aboutData = res.data.data.aboutSomeWords;
+          this.mission = res.data.data.mission;
+          this.getFeatures = res.data.data.services;
+
+          this.slider.uploadedSliderImages = res.data.data.slider;
+          this.slider.existImgs = res.data.data.slider.length ? [...res.data.data.slider] : [];
+          
+          this.companies.uploadedCompaniesImages = res.data.data.workedCompanies;
+          this.companies.existImgs = res.data.data.workedCompanies.length ? [...res.data.data.workedCompanies] : [];
+
+        }else{
+          alert('There is SomeThing Wrong')
+        }
       },
       getImgsWithUrl(bindingArr, outputArr, nameInLocaleStorage){
         for(let img of bindingArr){
           const reader = new FileReader();
           reader.addEventListener('load', () => {
-            img.url = reader.result;
-            outputArr.push(img)
-            console.log(reader.result);
+            outputArr.push({image: reader.result});
             // Store This Array below in both localStorage and Store
-            localStorage.setItem(nameInLocaleStorage, JSON.stringify(outputArr.map((img) => img.url)))
+            localStorage.setItem(nameInLocaleStorage, JSON.stringify(outputArr))
           })
           reader.readAsDataURL(img);
         }
-        bindingArr.splice(0,bindingArr.length)
+        // bindingArr.splice(0,bindingArr.length)
         document.activeElement.blur();
       },
-      getFeatureData(){
-        this.features = this.$refs.FeatureComponent.map((comp) => comp.$data.featuresData);
-      }
     },
     watch:{
-      sliderImages(newVal){
-        if(newVal.length){
-          this.getImgsWithUrl(this.sliderImages, this.uploadedSliderImages, 'imgSlider')
-        }
+      'slider.sliderImages': {
+        handler(newVal){
+          if(newVal.length){
+            this.getImgsWithUrl(this.slider.sliderImages, this.slider.uploadedSliderImages, 'imgSlider')
+          }
+        },
+        deep: true,
       },
-      companiesImages(newVal){
-        if(newVal.length){
-          this.getImgsWithUrl(this.companiesImages, this.uploadedCompaniesImages, 'companiesSlider')
-        }
+      'companies.currentCompanies': {
+        handler(newVal){
+          if(newVal.length){
+            this.getImgsWithUrl(this.companies.currentCompanies, this.companies.uploadedCompaniesImages, 'companiesSlider')
+          }
+        },
+        deep: true,
       },
     },
+     mounted(){
+      this.getHomePageData();
+    }
 }
 </script>
 
-<style>
+<style lang="scss">
+.divider {
+  height:2px;
+  width:90%;
+  background-color: #333;
+  &.w-100 {
+    width: 100% !important;
+  }
+}
+.makeGap {
+  gap :20px
+}
 .v-text-field input {
   padding:0
 }
@@ -240,10 +417,13 @@ export default {
   background-size: contain;
 }
 
+.noLetterSpace {
+  letter-spacing: 0 !important;
+}
+
 .AddFeat{
   background-color: #0057a8 !important;
   color: #FFF !important;
-  letter-spacing: 0 !important;
   font-weight: bold;
 }
 </style>

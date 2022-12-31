@@ -1,11 +1,11 @@
 <template>
     <div>
-      <h5 class="mb-3">الميزة {{ `#${featNum}` }}</h5>
+      <h5 class="my-3">الميزة {{ `#${featNum}` }}</h5>
       <v-form>
           <v-row>
             <v-col cols="12" md="6" class="pb-0">
               <v-text-field
-              v-model="featuresData.title_en"
+              v-model="isFeatDataExist.titleEn"
               :rules="title_content.title"
               outlined
               label="العنوان الانجليزى"
@@ -14,7 +14,7 @@
             </v-col>
             <v-col cols="12" md="6" class="pb-0">
               <v-text-field
-              v-model="featuresData.title_ar"
+              v-model="isFeatDataExist.titleAr"
               :rules="title_content.title"
               outlined
               label="العنوان العربى"
@@ -23,7 +23,7 @@
             </v-col>
             <v-col cols="12" md="6" class="pb-0">
               <v-textarea
-                v-model="featuresData.content_en"
+                v-model="isFeatDataExist.descriptionEn"
                 :rules="title_content.content"
                 outlined
                 no-resize
@@ -33,7 +33,7 @@
             </v-col>
             <v-col cols="12" md="6" class="pb-0">
               <v-textarea
-                v-model="featuresData.content_ar"
+                v-model="isFeatDataExist.descriptionAr"
                 :rules="title_content.content"
                 outlined
                 no-resize
@@ -42,7 +42,7 @@
               ></v-textarea>
             </v-col>
             <v-col cols="12">
-              <v-text-field v-model="featuresData.icon" label="أيقونة الميزة" outlined></v-text-field>
+              <v-text-field v-model="isFeatDataExist.icon" label="أيقونة الميزة" outlined></v-text-field>
             </v-col>
           </v-row>
       </v-form>
@@ -55,15 +55,19 @@
     props:{
       featNum: {
         type: Number,
+      },
+      featData: {
+        type: Object,
+        required: false
       }
     },
     data: () => ({
       valid: false,
       featuresData:{
-        title_en: '',
-        title_ar: '',
-        content_en: '',
-        content_ar: '',
+        titleEn: '',
+        titleAr: '',
+        descriptionEn: '',
+        descriptionAr: '',
         icon: ''
       },
       title_content: {
@@ -83,6 +87,11 @@
             this.$emit('featuresDataChanged')
         },
         deep: true
+      }
+    },
+    computed: {
+      isFeatDataExist(){
+        return this.featData ? this.featData : this.featuresData
       }
     }
   }
