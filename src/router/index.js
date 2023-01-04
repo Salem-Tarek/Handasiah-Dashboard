@@ -9,6 +9,7 @@ import Profile from "../views/Profile.vue";
 import HomeContent from "../views/HomeContent.vue";
 import AboutContent from "../views/AboutContent.vue";
 import ServicesContent from "../views/ServicesContent.vue";
+import Setting from "../views/Setting.vue";
 import NotFound from "../views/NotFound.vue";
 
 Vue.use(VueRouter);
@@ -48,6 +49,12 @@ const routes = [
     path: "/services-content",
     name: "ServicesContent",
     component: ServicesContent,
+    meta: {requiresAuth: true},
+  },
+  {
+    path: "/setting",
+    name: "Setting",
+    component: Setting,
     meta: {requiresAuth: true},
   },
   {

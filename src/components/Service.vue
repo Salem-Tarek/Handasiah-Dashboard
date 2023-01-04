@@ -192,6 +192,12 @@ export default {
                 this.$emit('serviceDataChanged')
             },
             deep: true
+        },
+        serviceData: {
+           handler(){
+                this.$emit('servicePropChanged')
+            },
+            deep: true 
         }
     },
     mounted(){

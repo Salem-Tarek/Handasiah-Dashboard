@@ -30,26 +30,29 @@
                   <h4>المزايا</h4>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <!-- If There is no Features -->
-                  <template v-if="!getFeatures.length">
-                    <template v-for="n in featsCount">
-                      <Fearure :featData="null" @featuresDataChanged="getFeatureData()" ref="FeatureComponent" :featNum="n" :key="`feat${n}`" />
-                      <div class="divider w-100" :key="n"></div>
-                    </template>
-                  </template>
+                  
                   <!-- If There is Features -->
-                  <template v-else>
+                  <template v-if="getFeatures.length">
                     <template v-for="(feat, index) in getFeatures">
-                      <Fearure :featData="feat" @featuresDataChanged="getFeatureData()" ref="FeatureComponent" :featNum="index+1" :key="`getFeat${feat.id}`" />
+                      <Fearure @featDataPropChanged="featBtn = false" :featData="feat" @featuresDataChanged="getFeatureData()" ref="FeatureComponent" :featNum="index+1" :key="`getFeat${feat.id}`" />
                       <div class="deleteFeat d-flex align-center justify-space-between makeGap" :key="feat.id">
                         <div class="divider"></div>
                         <v-btn depressed color="error" class="noLetterSpace" @click="deleteFeat(feat.id)">حذف الميزة</v-btn>
                       </div>
                     </template>
                   </template>
+
+                  <!-- The New Features -->
+                  <template>
+                    <template v-for="n in featsCount">
+                      <Fearure :featData="null" @featuresDataChanged="getFeatureData()" ref="FeatureComponent" :featNum="n + getFeatures.length" :key="`feat${n}`" />
+                      <div class="divider w-100" :key="n"></div>
+                    </template>
+                  </template>
+
                   <div class="mt-3 d-flex makeGap">
                     <v-btn depressed class="AddFeat noLetterSpace" @click="featsCount++">أضف ميزة</v-btn>
-                    <v-btn color="success" class="AddFeat noLetterSpace" @click="submitFeatures()">حفظ المميزات</v-btn>
+                    <v-btn color="success" class="AddFeat noLetterSpace" @click="submitFeatures()" :disabled="featBtn">حفظ المميزات</v-btn>
                   </div>
               </v-expansion-panel-content>
             </v-expansion-panel>
@@ -196,6 +199,7 @@ export default {
         featsCount: 1,
         features: [],
         getFeatures: [],
+        featBtn: true,
 
         aboutData:{
           descriptionEn: '',
@@ -269,13 +273,29 @@ export default {
 
       // Features functions
       getFeatureData(){
-        this.features = this.$refs.FeatureComponent.map((comp) => comp.$data.featuresData);
+        this.features = this.$refs.FeatureComponent.map((comp) => !comp._props.featData ? comp.$data.featuresData : comp._props.featData);
+        this.featBtn = false;
       },
       async submitFeatures(){
+        this.getFeatureData();
+        // Remove the Last Element Which is the current Feat Component
+        this.features.pop();
+
+        for(let feat of this.features){
+          for(let key in feat){
+            // console.log(feat[key]);
+            if(feat[key] === "" || feat[key] === null){
+              alert('يجب ملئ كل حقول الادخال')
+              return;
+            }
+          }
+        }
         const res = await axios.post('/dashboard/homePage/services/save', {Services: this.features});
         if(res.status === 200){
           alert('تم حفظ المميزات بنجاح')
           this.getHomePageData();
+          document.location.reload();
+          // alert('Get The Data')
         }
       },
       async deleteFeat(id){
@@ -345,8 +365,8 @@ export default {
           this.demoData = res.data.data.video;
           this.aboutData = res.data.data.aboutSomeWords;
           this.mission = res.data.data.mission;
-          this.getFeatures = res.data.data.services;
-
+          this.getFeatures = res.data.data.services.sort((a, b) => a.id - b.id);
+          
           this.slider.uploadedSliderImages = res.data.data.slider;
           this.slider.existImgs = res.data.data.slider.length ? [...res.data.data.slider] : [];
           

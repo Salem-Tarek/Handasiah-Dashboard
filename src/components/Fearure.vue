@@ -44,12 +44,21 @@
             <v-col cols="12">
               <v-text-field v-model="isFeatDataExist.icon" label="أيقونة الميزة" outlined></v-text-field>
             </v-col>
+            <!-- <v-col cols="12">
+              <div class="icons_wrapper">
+                <v-btn depressed v-for="icon in icons.iconsArr" :key="icon.id">
+                  <v-icon>{{ "mdi-" + icon.name }}</v-icon>
+                </v-btn>
+              </div>
+            </v-col> -->
           </v-row>
       </v-form>
     </div>
 </template>
 
 <script>
+// import icons from '../assets/icons.js'
+
   export default {
     name:"Fearure",
     props:{
@@ -62,6 +71,7 @@
       }
     },
     data: () => ({
+      icons: [],
       valid: false,
       featuresData:{
         titleEn: '',
@@ -87,16 +97,29 @@
             this.$emit('featuresDataChanged')
         },
         deep: true
-      }
+      },
+      featData:{
+        handler(){
+          this.$emit('featDataPropChanged')
+        },
+        deep: true
+      },
+
     },
     computed: {
       isFeatDataExist(){
         return this.featData ? this.featData : this.featuresData
       }
-    }
+    },
+    // mounted(){
+    //   this.icons = icons;
+    //   console.log(this.icons);
+    // }
   }
 </script>
 
 <style>
-
+.icons_wrapper {
+  max-height: 400px; 
+}
 </style>
