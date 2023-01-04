@@ -18,32 +18,40 @@
         </v-list>
         <v-list class="pt-0 navigation">
             <v-subheader>الإعدادت</v-subheader>
-            <!-- <v-list-item-group v-model="selected"> -->
-                <v-list-item class="px-0">
-                    <router-link to="/setting" class="d-flex px-4">
-                        <v-list-item-icon>
-                            <v-icon v-text="'mdi-cog'"></v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title v-text="'الإعدادات'"></v-list-item-title>
-                        </v-list-item-content>
-                    </router-link>
-                </v-list-item>
-            <!-- </v-list-item-group> -->
+            <v-list-item class="px-0">
+                <router-link to="/setting" class="d-flex px-4">
+                    <v-list-item-icon>
+                        <v-icon v-text="'mdi-cog'"></v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                        <v-list-item-title v-text="'الإعدادات'"></v-list-item-title>
+                    </v-list-item-content>
+                </router-link>
+            </v-list-item>
 
             <v-subheader>الصفحات</v-subheader>
-            <!-- <v-list-item-group v-model="selected"> -->
-                <v-list-item v-for="(page, i) in pagesList" :key="i" class="px-0">
-                    <router-link :to="page.link" class="d-flex px-4">
-                        <v-list-item-icon>
-                            <v-icon v-text="page.icon"></v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title v-text="page.title"></v-list-item-title>
-                        </v-list-item-content>
-                    </router-link>
-                </v-list-item>
-            <!-- </v-list-item-group> -->
+            <v-list-item v-for="(page, i) in pagesList" :key="i" class="px-0">
+                <router-link :to="page.link" class="d-flex px-4">
+                    <v-list-item-icon>
+                        <v-icon v-text="page.icon"></v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                        <v-list-item-title v-text="page.title"></v-list-item-title>
+                    </v-list-item-content>
+                </router-link>
+            </v-list-item>
+
+            <v-subheader>الطلبات</v-subheader>
+            <v-list-item v-for="(page, i) in ordersList" :key="i" class="px-0">
+                <router-link :to="page.link" class="d-flex px-4">
+                    <v-list-item-icon>
+                        <v-icon v-text="page.icon"></v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                        <v-list-item-title v-text="page.title"></v-list-item-title>
+                    </v-list-item-content>
+                </router-link>
+            </v-list-item>
             
         </v-list>
     </v-navigation-drawer>
@@ -91,48 +99,16 @@ export default {
                 {title: "3 New Reports", icon: "mdi-file"},
             ],
             drawer: true,
-            fav1:true,
-            fav2:false,
-            fav3:true,
-            dialog:false,
-            searchTxt: "",
             pagesList: [
                 {title: "الرئيسية", icon: "mdi-home", link: "/home-content"},
                 {title: "عننا", icon: "mdi-information", link: "/about-content"},
                 {title: "الخدمات", icon: "mdi-tools", link: "/services-content"},
             ],
-            selected: 0,
-            emailRules:{
-                email:[
-                    value => !!value || 'Email is Required'
-                ],
-                password:[
-                    value => !!value || 'Password is Required'
-                ]
-            },
-            logInUsers:[
-                {
-                    name: "Salem Tarek",
-                    email:"salem@gmail.com",
-                    password:"123456789",
-                    token:"tstststs123"
-                },
-                {
-                    name: "Ahmed Zizo",
-                    email:"zizo@gmail.com",
-                    password:"135791113",
-                    token:"tstststs456"
-                },
-                {
-                    name: "Sayed",
-                    email:"sayed@gmail.com",
-                    password:"2468101214",
-                    token:"tstststs789"
-                },
-
-            ],
-            email:"",
-            password:""
+            ordersList: [
+                {title: "طلب سعر", icon: "mdi-home", link: "/home-content"},
+                {title: "طلب صيانة", icon: "mdi-home", link: "/home-content"},
+                {title: "طلب معاينة", icon: "mdi-home", link: "/home-content"},
+            ]
         }
     },
     computed: mapGetters(['isLogged']),
