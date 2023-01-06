@@ -275,11 +275,13 @@ export default {
       getFeatureData(){
         this.features = this.$refs.FeatureComponent.map((comp) => !comp._props.featData ? comp.$data.featuresData : comp._props.featData);
         this.featBtn = false;
+        this.features.pop();
+        console.log(this.features);
       },
       async submitFeatures(){
         this.getFeatureData();
-        // Remove the Last Element Which is the current Feat Component
-        this.features.pop();
+        // // Remove the Last Element Which is the current Feat Component
+        // this.features.pop();
 
         for(let feat of this.features){
           for(let key in feat){
