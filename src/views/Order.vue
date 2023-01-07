@@ -269,6 +269,7 @@ export default {
       if(res.status === 200){
         alert('تم حذف الطلب بنجاح')
       }
+      this.dialogDelete = false;
     }
   },
   // mounted(){

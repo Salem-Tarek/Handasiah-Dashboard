@@ -275,8 +275,11 @@ export default {
       getFeatureData(){
         this.features = this.$refs.FeatureComponent.map((comp) => !comp._props.featData ? comp.$data.featuresData : comp._props.featData);
         this.featBtn = false;
-        this.features.pop();
-        console.log(this.features);
+
+        let lastItem = this.features[this.features.length - 1];
+        if(lastItem.titleEn.trim() === '' && lastItem.titleAr.trim() === '' && lastItem.descriptionEn.trim() === '' && lastItem.descriptionAr.trim() === '' && lastItem.icon.trim() === ''){
+          this.features.pop();
+        }
       },
       async submitFeatures(){
         this.getFeatureData();
