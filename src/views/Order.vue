@@ -272,9 +272,6 @@ export default {
       this.dialogDelete = false;
     }
   },
-  // mounted(){
-  //   this.getOrdersData();
-  // },
   beforeRouteEnter(to, from, next){
     if(router.getters.isLogged){
       next()

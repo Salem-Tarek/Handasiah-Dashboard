@@ -154,6 +154,10 @@ export default {
         },
         handleImages(){
             this.uploadedImgs = this.services.existImgs.length ? [...this.services.existImgs, ...this.services.currentServices] : [...this.services.currentServices];
+            this.servicesData.images = this.uploadedImgs;
+
+            console.log("IMMMMMMMMMMMMMMMMMGS");
+            console.log(this.uploadedImgs);
         },
         async deleteServiceImg(img){
             if(img.id){

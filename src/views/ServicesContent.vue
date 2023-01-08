@@ -49,17 +49,27 @@ export default {
   },
   methods:{
     getServicesData(){
-      this.services = this.$refs.serviceComponent.map((comp) => !comp._props.serviceData ? comp.$data.servicesData : comp._props.serviceData);
+      // this.services = this.$refs.serviceComponent.map((comp) => !comp._props.serviceData ? comp.$data.servicesData : comp._props.serviceData);
+      this.services = this.$refs.serviceComponent.map((comp) => !comp._props.serviceData ? false : comp._props.serviceData).filter(service => service !== false);
       
-      for(let i = 0; i < this.$refs.serviceComponent.length; i++){
-        this.services[i].images = this.$refs.serviceComponent[i].$data.uploadedImgs
-      }
+      this.services = [...this.services, this.$refs.serviceComponent.map((comp) => !comp._props.serviceData ? comp.$data.servicesData : false).filter(service => service !== false)[0]];
+      
+      let lastServiceData = Object.values(this.services[this.services.length - 1]);
+      console.log(Object.values(this.services[this.services.length - 1]));
 
+      let isEmpty = lastServiceData.every(val => val === '' || val === 0);
+      
+      if(isEmpty){
+        this.services.pop()
+      }else{
+        console.log(this.services);
+      }
+      
       this.serviceBtn = false;
     },
     async submitServices(){
-      console.log(this.services);
       this.getServicesData();
+      console.log(this.services);
       
       // Remove the Last Element Which is the current Service Component
       // this.services.pop();
@@ -77,7 +87,7 @@ export default {
       let fd = new FormData();
       for(let i = 0; i < this.services.length; i++){
         for(let key in this.services[i]){
-          if(key === 'images'){
+          if(key === 'images' || key === 'media'){
             if(key.length){
               for(let j = 0; j < this.services[i][key].length; j++){
                 // console.log(this.services[i][key][j]);
@@ -92,8 +102,8 @@ export default {
 
       console.log(...fd);
 
-      const res = await axios.post('/dashboard/servicesPage/Items/save', fd)
-      console.log(res);
+      // const res = await axios.post('/dashboard/servicesPage/Items/save', fd)
+      // console.log(res);
     },
     async getServicesPage(){
       const res = await axios.get('/dashboard/servicesPage')
