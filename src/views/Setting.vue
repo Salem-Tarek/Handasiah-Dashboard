@@ -76,6 +76,22 @@
                     prepend-inner-icon="mdi-gmail"
                   ></v-text-field>
               </v-col>
+              <v-col cols="12" md="6" class="py-0">
+                  <v-textarea
+                    v-model="settings.descriptionAr"
+                    outlined
+                    label="الوصف عربى"
+                    prepend-inner-icon="mdi-note"
+                  ></v-textarea>
+              </v-col>
+              <v-col cols="12" md="6" class="py-0">
+                  <v-textarea
+                    v-model="settings.descriptionEn"
+                    outlined
+                    label="الوصف انجليزى"
+                    prepend-inner-icon="mdi-note"
+                  ></v-textarea>
+              </v-col>
               <v-col cols="12" md="12" class="pt-0">
                   <v-btn type="submit" class="submitBtn noLetterSpace font-weight-bold mb-5" dark block @click.prevent="submitSetting" :disabled="submitBtn">إرســـال</v-btn>
               </v-col>
@@ -98,6 +114,8 @@ export default {
         mobile2: '',
         addressEn: '',
         addressAr: '',
+        descriptionEn: '',
+        descriptionAr: '',
         linkedIn: '',
         whatsapp: '',
         facebook: '',
@@ -126,7 +144,7 @@ export default {
       const res = await axios.get('/dashboard/setting');
       console.log(res);
       if(res.status === 200){
-        // this.settings = res.data.data;
+        this.settings = res.data.data;
       }
     }
   },

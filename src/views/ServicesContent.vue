@@ -49,20 +49,27 @@ export default {
   },
   methods:{
     getServicesData(){
-      this.services = this.$refs.serviceComponent.map((comp) => !comp._props.serviceData ? comp.$data.servicesData : comp._props.serviceData);
-      
-      for(let i = 0; i < this.$refs.serviceComponent.length; i++){
-        this.services[i].images = this.$refs.serviceComponent[i].$data.uploadedImgs
-      }
+      // this.services = this.$refs.serviceComponent.map((comp) => !comp._props.serviceData ? comp.$data.servicesData : comp._props.serviceData);
+      this.services = this.$refs.serviceComponent.map((comp) => !comp._props.serviceData ? false : comp._props.serviceData).filter(service => service !== false);
+      console.log(this.$refs.serviceComponent);
 
+      this.services = [...this.services, this.$refs.serviceComponent.map((comp) => !comp._props.serviceData ? comp.$data.servicesData : false).filter(service => service !== false)[0]];
+      
+      console.log(this.services);
+      let lastServiceData = Object.values(this.services[this.services.length - 1]);
+
+      let isEmpty = lastServiceData.every(val => val === '' || val === 0 || val === null);
+      
+      if(isEmpty){
+        this.services.pop()
+      }else{
+        console.log(this.services);
+      }
+      
       this.serviceBtn = false;
     },
     async submitServices(){
-      console.log(this.services);
       this.getServicesData();
-      
-      // Remove the Last Element Which is the current Service Component
-      // this.services.pop();
 
       for(let service of this.services){
         for(let key in service){
@@ -77,11 +84,11 @@ export default {
       let fd = new FormData();
       for(let i = 0; i < this.services.length; i++){
         for(let key in this.services[i]){
-          if(key === 'images'){
+          if(key === 'images' || key === 'media'){
             if(key.length){
               for(let j = 0; j < this.services[i][key].length; j++){
                 // console.log(this.services[i][key][j]);
-                fd.append(`Items[${i}][Images][${j}][image]`, this.services[i][key][j].image || this.services[i][key][j])
+                fd.append(`Items[${i}][Images][${j}][image]`, this.services[i][key][j].image || this.services[i][key][j]);
               }
             }
           }else{

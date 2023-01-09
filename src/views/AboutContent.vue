@@ -46,10 +46,10 @@
                       <v-col cols="12">
                         <v-file-input v-model="certificates.currentCertificates" label="صور الشهادات" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
                         <template v-if="certificates.uploadedCertificatesImages.length">
-                          <div class="mb-2 d-flex justify-space-between" v-for="img in certificates.uploadedCertificatesImages" :key="img.lastModified">
+                          <div class="mb-2 d-flex justify-space-between" v-for="(img, index) in certificates.uploadedCertificatesImages" :key="img.lastModified">
                             <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
                             <div class="actions">
-                              <v-icon class="red--text" @click="deleteCertificateImg(img)">mdi-delete</v-icon>
+                              <v-icon class="red--text" @click="deleteCertificateImg(img, index)">mdi-delete</v-icon>
                             </div>
                           </div>
                         </template>
@@ -69,10 +69,10 @@
                       <v-col cols="12">
                         <v-file-input v-model="companies.currentCompanies" label="صور الشركات" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
                         <template v-if="companies.uploadedCompaniesImages.length">
-                          <div class="mb-2 d-flex justify-space-between" v-for="img in companies.uploadedCompaniesImages" :key="img.lastModified">
+                          <div class="mb-2 d-flex justify-space-between" v-for="(img, index) in companies.uploadedCompaniesImages" :key="img.lastModified">
                             <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
                             <div class="actions">
-                              <v-icon class="red--text" @click="deleteCompanyImg(img)">mdi-delete</v-icon>
+                              <v-icon class="red--text" @click="deleteCompanyImg(img, index)">mdi-delete</v-icon>
                             </div>
                           </div>
                         </template>
@@ -135,18 +135,33 @@ export default {
           alert('There is SomeThing Wrong')
         }
       },
-      getImgsWithUrl(bindingArr, outputArr, nameInLocaleStorage){
+      trackImgs(bindingArr, outputArr, nameInLocaleStorage){
         for(let img of bindingArr){
-          const reader = new FileReader();
-          reader.addEventListener('load', () => {
-            outputArr.push({image: reader.result});
-            // Store This Array below in both localStorage and Store
+          let myPromise = new Promise(function(myResolve, myReject) {
+            const reader = new FileReader();
+
+            reader.onload = () => {
+              if (reader.result) {
+                if(!outputArr.some(img => img.image === reader.result)){
+                  myResolve({isNotExist: true, val: reader.result});
+                }
+              } else {
+                myReject("Error");
+              }
+            }
+            reader.readAsDataURL(img)
+          });
+
+          myPromise.then((vals) => {
+            if(vals.isNotExist){
+              outputArr.push({image: vals.val});
+            }
+            console.log(outputArr);
             localStorage.setItem(nameInLocaleStorage, JSON.stringify(outputArr))
+          }, (error) => {
+            console.log(error);
           })
-          reader.readAsDataURL(img);
         }
-        // bindingArr.splice(0,bindingArr.length)
-        document.activeElement.blur();
       },
       async submitCertificatesFunc(){
         let fd = new FormData();
@@ -167,20 +182,16 @@ export default {
           alert('No Changes')
         }
       },
-      async deleteCertificateImg(img){
+      async deleteCertificateImg(img, index){
         if(img.id){
           const res = await axios.post('/dashboard/aboutPage/certificates/delete', {id: img.id});
-          console.log(res);
           if(res.status === 200){
             alert('تم حذف صورة الشهادة') 
             this.getAboutPageData();
           }
         }else{
-          let choosedImgIndexInCertificatesImagesArr = this.certificates.uploadedCertificatesImages.length - this.certificates.existImgs.length - 1;
-
-          this.certificates.currentCertificates.splice(choosedImgIndexInCertificatesImagesArr, 1);
-
-          this.certificates.uploadedCertificatesImages = this.certificates.uploadedCertificatesImages.filter(file => file.image !== img.image);
+          this.certificates.uploadedCertificatesImages.splice(index, 1);
+          this.certificates.currentCertificates.splice(index - this.certificates.existImgs.length, 1);
         }
       },
       async submitCompaniesFunc(){
@@ -202,20 +213,16 @@ export default {
           alert('No Changes')
         }
       },
-      async deleteCompanyImg(img){
+      async deleteCompanyImg(img, index){
         if(img.id){
           const res = await axios.post('/dashboard/aboutPage/companie/delete', {id: img.id});
-          console.log(res);
           if(res.status === 200){
-            alert('تم حذف صورة الشركة') 
-            this.getAboutPageData();
+            alert('تم حذف صورة الشركه')
+            this.getHomePageData();
           }
         }else{
-          let choosedImgIndexInCompaniesImagesArr = this.companies.uploadedCompaniesImages.length - this.companies.existImgs.length - 1;
-
-          this.companies.currentCompanies.splice(choosedImgIndexInCompaniesImagesArr, 1);
-
-          this.companies.uploadedCompaniesImages = this.companies.uploadedCompaniesImages.filter(file => file.image !== img.image);
+          this.companies.uploadedCompaniesImages.splice(index, 1);
+          this.companies.currentCompanies.splice(index - this.companies.existImgs.length, 1);
         }
       },
       async submitAbout(){
@@ -230,7 +237,7 @@ export default {
       'certificates.currentCertificates': {
         handler(newVal){
           if(newVal.length){
-            this.getImgsWithUrl(this.certificates.currentCertificates, this.certificates.uploadedCertificatesImages, 'certificatesSlider')
+            this.trackImgs(this.certificates.currentCertificates, this.certificates.uploadedCertificatesImages, 'certificatesSlider')
           }
         },
         deep: true,
@@ -238,7 +245,7 @@ export default {
       'companies.currentCompanies': {
         handler(newVal){
           if(newVal.length){
-            this.getImgsWithUrl(this.companies.currentCompanies, this.companies.uploadedCompaniesImages, 'companiesSlider')
+            this.trackImgs(this.companies.currentCompanies, this.companies.uploadedCompaniesImages, 'companiesSlider')
           }
         },
         deep: true,

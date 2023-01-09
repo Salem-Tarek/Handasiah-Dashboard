@@ -42,13 +42,25 @@
             </v-list-item>
 
             <v-subheader>الطلبات</v-subheader>
-            <v-list-item v-for="(page, i) in ordersList" :key="i" class="px-0">
+            <v-list-item v-for="(page, i) in ordersList" :key="`order-${i}`" class="px-0">
                 <router-link :to="page.link" class="d-flex px-4">
                     <v-list-item-icon>
                         <v-icon v-text="page.icon"></v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
                         <v-list-item-title v-text="page.title"></v-list-item-title>
+                    </v-list-item-content>
+                </router-link>
+            </v-list-item>
+
+            <v-subheader>تواصل معنا</v-subheader>
+            <v-list-item class="px-0">
+                <router-link to="/messages" class="d-flex px-4">
+                    <v-list-item-icon>
+                        <v-icon>mdi-forum</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                        <v-list-item-title>تواصل معنا</v-list-item-title>
                     </v-list-item-content>
                 </router-link>
             </v-list-item>
@@ -93,11 +105,6 @@ export default {
     name: "Navbar",
     data(){
         return {
-            notifications:[
-                {title: "4 new messages", icon: "mdi-email"},
-                {title: "8 friend requests", icon: "mdi-account-group"},
-                {title: "3 New Reports", icon: "mdi-file"},
-            ],
             drawer: true,
             pagesList: [
                 {title: "الرئيسية", icon: "mdi-home", link: "/home-content"},
@@ -105,9 +112,9 @@ export default {
                 {title: "الخدمات", icon: "mdi-tools", link: "/services-content"},
             ],
             ordersList: [
-                {title: "طلب سعر", icon: "mdi-home", link: "/home-content"},
-                {title: "طلب صيانة", icon: "mdi-home", link: "/home-content"},
-                {title: "طلب معاينة", icon: "mdi-home", link: "/home-content"},
+                {title: "طلب سعر", icon: "mdi-home", link: "/Order/price"},
+                {title: "طلب صيانة", icon: "mdi-home", link: "/Order/service"},
+                {title: "طلب معاينة", icon: "mdi-home", link: "/Order/survey"},
             ]
         }
     },

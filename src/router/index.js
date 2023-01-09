@@ -9,6 +9,8 @@ import Profile from "../views/Profile.vue";
 import HomeContent from "../views/HomeContent.vue";
 import AboutContent from "../views/AboutContent.vue";
 import ServicesContent from "../views/ServicesContent.vue";
+import Order from "../views/Order.vue";
+import Messages from "../views/Messages.vue";
 import Setting from "../views/Setting.vue";
 import NotFound from "../views/NotFound.vue";
 
@@ -49,6 +51,19 @@ const routes = [
     path: "/services-content",
     name: "ServicesContent",
     component: ServicesContent,
+    meta: {requiresAuth: true},
+  },
+  {
+    // /:id
+    path: "/Order/:type",
+    name: "Order",
+    component: Order,
+    meta: {requiresAuth: true},
+  },
+  {
+    path: "/messages",
+    name: "Messages",
+    component: Messages,
     meta: {requiresAuth: true},
   },
   {

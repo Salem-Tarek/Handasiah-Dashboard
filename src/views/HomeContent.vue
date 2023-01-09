@@ -12,10 +12,10 @@
                       <v-col cols="12">
                         <v-file-input v-model="slider.sliderImages" label="صور السلايدر" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
                         <template v-if="slider.uploadedSliderImages.length">
-                          <div class="mb-2 d-flex justify-space-between" v-for="img in slider.uploadedSliderImages" :key="img.lastModified">
+                          <div class="mb-2 d-flex justify-space-between" v-for="(img, index) in slider.uploadedSliderImages" :key="img.lastModified">
                             <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
                             <div class="actions">
-                              <v-icon class="red--text" @click="deleteSliderImg(img)">mdi-delete</v-icon>
+                              <v-icon class="red--text" @click="deleteSliderImg(img, index)">mdi-delete</v-icon>
                             </div>
                           </div>
                         </template>
@@ -120,10 +120,10 @@
                       <v-col cols="12">
                         <v-file-input v-model="companies.currentCompanies" label="صور الشركات" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
                         <template v-if="companies.uploadedCompaniesImages.length">
-                          <div class="mb-2 d-flex justify-space-between" v-for="img in companies.uploadedCompaniesImages" :key="img.lastModified">
+                          <div class="mb-2 d-flex justify-space-between" v-for="(img, index) in companies.uploadedCompaniesImages" :key="img.lastModified">
                             <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
                             <div class="actions">
-                              <v-icon class="red--text" @click="deleteCompanyImg(img)">mdi-delete</v-icon>
+                              <v-icon class="red--text" @click="deleteCompanyImg(img, index)">mdi-delete</v-icon>
                             </div>
                           </div>
                         </template>
@@ -254,20 +254,16 @@ export default {
           alert('No Changes')
         }
       },
-      async deleteSliderImg(img){
+      async deleteSliderImg(img, index){
         if(img.id){
           const res = await axios.post('/dashboard/homePage/slider/delete', {id: img.id});
-          console.log(res);
-          alert('Done') 
           if(res.status === 200){
+            alert('Done') 
             this.getHomePageData();
           }
         }else{
-          let choosedImgIndexInSliderImagesArr = this.slider.uploadedSliderImages.length - this.slider.existImgs.length - 1;
-
-          this.slider.sliderImages.splice(choosedImgIndexInSliderImagesArr, 1);
-
-          this.slider.uploadedSliderImages = this.slider.uploadedSliderImages.filter(file => file.image !== img.image);
+          this.slider.uploadedSliderImages.splice(index, 1);
+          this.slider.sliderImages.splice(index - this.slider.existImgs.length, 1);
         }
       },
 
@@ -275,11 +271,16 @@ export default {
       getFeatureData(){
         this.features = this.$refs.FeatureComponent.map((comp) => !comp._props.featData ? comp.$data.featuresData : comp._props.featData);
         this.featBtn = false;
+
+        let lastItem = this.features[this.features.length - 1];
+        if(lastItem.titleEn.trim() === '' && lastItem.titleAr.trim() === '' && lastItem.descriptionEn.trim() === '' && lastItem.descriptionAr.trim() === '' && lastItem.icon.trim() === ''){
+          this.features.pop();
+        }
       },
       async submitFeatures(){
         this.getFeatureData();
-        // Remove the Last Element Which is the current Feat Component
-        this.features.pop();
+        // // Remove the Last Element Which is the current Feat Component
+        // this.features.pop();
 
         for(let feat of this.features){
           for(let key in feat){
@@ -335,20 +336,16 @@ export default {
           alert('No Changes')
         }
       },
-      async deleteCompanyImg(img){
+      async deleteCompanyImg(img, index){
         if(img.id){
           const res = await axios.post('/dashboard/aboutPage/companie/delete', {id: img.id});
-          console.log(res);
           if(res.status === 200){
             alert('تم حذف صورة الشركه')
             this.getHomePageData();
           }
         }else{
-          let choosedImgIndexInCompaniesImagesArr = this.companies.uploadedCompaniesImages.length - this.companies.existImgs.length - 1;
-
-          this.companies.currentCompanies.splice(choosedImgIndexInCompaniesImagesArr, 1);
-
-          this.companies.uploadedCompaniesImages = this.companies.uploadedCompaniesImages.filter(file => file.image !== img.image);
+          this.companies.uploadedCompaniesImages.splice(index, 1);
+          this.companies.currentCompanies.splice(index - this.companies.existImgs.length, 1);
         }
       },
 
@@ -377,25 +374,39 @@ export default {
           alert('There is SomeThing Wrong')
         }
       },
-      getImgsWithUrl(bindingArr, outputArr, nameInLocaleStorage){
+      trackImgs(bindingArr, outputArr, nameInLocaleStorage){
         for(let img of bindingArr){
-          const reader = new FileReader();
-          reader.addEventListener('load', () => {
-            outputArr.push({image: reader.result});
-            // Store This Array below in both localStorage and Store
+          let myPromise = new Promise(function(myResolve, myReject) {
+            const reader = new FileReader();
+
+            reader.onload = () => {
+              if (reader.result) {
+                if(!outputArr.some(img => img.image === reader.result)){
+                  myResolve({isNotExist: true, val: reader.result});
+                }
+              } else {
+                myReject("Error");
+              }
+            }
+            reader.readAsDataURL(img)
+          });
+
+          myPromise.then((vals) => {
+            if(vals.isNotExist){
+              outputArr.push({image: vals.val});
+            }
             localStorage.setItem(nameInLocaleStorage, JSON.stringify(outputArr))
+          }, (error) => {
+            console.log(error);
           })
-          reader.readAsDataURL(img);
         }
-        // bindingArr.splice(0,bindingArr.length)
-        document.activeElement.blur();
       },
     },
     watch:{
       'slider.sliderImages': {
         handler(newVal){
           if(newVal.length){
-            this.getImgsWithUrl(this.slider.sliderImages, this.slider.uploadedSliderImages, 'imgSlider')
+            this.trackImgs(this.slider.sliderImages, this.slider.uploadedSliderImages, 'imgSlider')
           }
         },
         deep: true,
@@ -403,7 +414,7 @@ export default {
       'companies.currentCompanies': {
         handler(newVal){
           if(newVal.length){
-            this.getImgsWithUrl(this.companies.currentCompanies, this.companies.uploadedCompaniesImages, 'companiesSlider')
+            this.trackImgs(this.companies.currentCompanies, this.companies.uploadedCompaniesImages, 'companiesSlider')
           }
         },
         deep: true,
