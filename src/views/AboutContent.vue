@@ -4,7 +4,7 @@
         <v-expansion-panels>
             <v-expansion-panel>
                 <v-expansion-panel-header class="font-weight-medium">
-                  محتوى العنوان
+                  <h4>محتوى العنوان</h4>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-form>
@@ -38,7 +38,7 @@
             </v-expansion-panel>
             <v-expansion-panel>
                 <v-expansion-panel-header class="font-weight-medium">
-                  الشهادات
+                  <h4>الشهادات</h4>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-form>
@@ -61,7 +61,7 @@
             </v-expansion-panel>
             <v-expansion-panel>
                 <v-expansion-panel-header class="font-weight-medium">
-                  شركات تم العمل معها
+                  <h4>شركات تم العمل معها</h4>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-form>

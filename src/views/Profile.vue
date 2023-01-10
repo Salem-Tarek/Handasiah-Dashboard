@@ -1,19 +1,22 @@
 <template>
   <v-container>
-    <v-btn color="info" @click="addUserProcess">
+    <v-btn color="info" @click="addUserProcess" class="mb-3">
       <v-icon left>mdi-account-plus</v-icon>
       إضافة مشرف
     </v-btn>
     <!-- User Details Edit and Add -->
     <v-dialog v-model="editDialog" max-width="500px">
-    <v-card class="mx-auto" max-width="500px">
+    <v-card class="mx-auto py-3" max-width="500px">
       <v-card-title>
-        <span class="text-h5">بيانات المشرف</span>
+        <span class="text-h5 subtitle-1">بيانات المشرف</span>
       </v-card-title>
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col cols="12">
+            <v-col cols="12" v-if="mode === 'show' && editOrAddUserData.image">
+              <v-img :src="editOrAddUserData.image" contain></v-img>
+            </v-col>
+            <v-col cols="12" v-else-if="mode !== 'show'">
               <v-file-input
                 @change="handleUserImg"
                 outlined
@@ -23,7 +26,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
-                @change="disabled = false"
+                :disabled="mode === 'show'"
                 outlined
                 hide-details
                 v-model="editOrAddUserData.name"
@@ -32,16 +35,17 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
-                @change="disabled = false"
+                :disabled="mode === 'show'"
                 outlined
                 hide-details
                 v-model="editOrAddUserData.email"
                 label="الايميل"
               ></v-text-field>
             </v-col>
-            <v-col cols="12">
+            <v-col cols="12" v-if="mode === 'create'">
               <v-text-field
                 @change="disabled = false"
+                type="password"
                 outlined
                 hide-details
                 v-model="editOrAddUserData.password"
@@ -52,8 +56,9 @@
         </v-container>
       </v-card-text>
       <v-card-actions>
-        <v-btn v-if="mode === 'create'" depressed color="info" @click="createUser"><v-icon>mdi-account-plus</v-icon> إنشاء مشرف</v-btn>
-        <v-btn v-else depressed color="info" @click="saveUserChanges()"><v-icon>mdi-content-save</v-icon> حفظ التعديلات</v-btn>
+        <v-btn v-if="mode === 'create'" depressed color="info" @click="createUser"><v-icon left>mdi-account-plus</v-icon> إنشاء مشرف</v-btn>
+        <v-btn v-if="mode === 'edit'" depressed color="info" @click="updateUser"><v-icon left>mdi-account-edit</v-icon> تعديل بيانات المشرف</v-btn>
+        <v-btn depressed color="error" @click="editDialog = false"><v-icon left>mdi-account-plus</v-icon> إغلاق</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -91,8 +96,8 @@
             </v-toolbar>
           </template>
           <template v-slot:item.actions="{ item }">
-            <v-icon large class="title ml-3" @click="editUser(item)">
-              mdi-account-edit
+            <v-icon large class="title ml-3" @click="showUser(item)">
+              mdi-eye
             </v-icon>
             <v-icon class="title" @click="deleteUser(item.id)">
               mdi-delete
@@ -104,7 +109,7 @@
     <h3 class="my-4">بروفايل الأدمن</h3>
     <v-card class="mx-auto" max-width="374">
       <!-- <v-img height="250" :src="dataShow.image || '../assets/default.jpg'"></v-img> -->
-      <v-img height="250" src="../assets/default.jpg"></v-img>
+      <v-img height="250" :src="dataShow.image || userImg"></v-img>
 
       <v-card-title class="noLetterSpace">{{ dataShow && dataShow.name }}</v-card-title>
 
@@ -126,7 +131,7 @@ export default {
         dialog: false,
         editDialog: false,
         submitBtn: true,
-        userImg: '',
+        userImg: '../assets/default.jpg',
         dataShow: null,
         userData: {
           name: "",
@@ -162,17 +167,20 @@ export default {
       }
     },
     methods: {
-      async submitData(){
+      async updateUser(){
+        console.log(this.editedUser);
         let fd = new FormData();
-        for(let key in this.userData){
-          if(this.userData[key]){
-            fd.append(key, this.userData[key])
+        for(let key in this.editedUser){
+          if(this.editedUser[key]){
+            fd.append(key, this.editedUser[key])
           }
         }
         const res = await axios.post('/dashboard/profile/update', fd);
-        console.log(res);
         if(res.status === 200){
-          alert('تم تعديل البيانات بنجاح')
+          alert('تم تعديل البيانات بنجاح');
+          this.getProfileData();
+          this.getUsers();
+          this.editDialog = false;
         }
       },
       handleImg(e){
@@ -212,8 +220,10 @@ export default {
         if(this.userDeletedId){
           const res = await axios.post('/dashboard/users/delete', {id: this.userDeletedId});
           console.log(res);
-          if(res.status){
+          if(res.status === 200){
             alert('تم حذف المستخدم بنجاح')
+            this.dialogDelete = false;
+            this.getUsers();
           }
         }
       },
@@ -221,12 +231,18 @@ export default {
         this.dialogDelete = false;
         this.userDeletedId = null;
       },
+      showUser(item){
+        this.editDialog = true;
+        this.editedUser = item;
+        this.mode = 'show';
+      },
       editUser(item){
         this.editDialog = true;
         this.editedUser = item;
         this.mode = 'edit';
       },
       deleteUser(id){
+        console.log(id);
         if(id !== this.dataShow.id){
           this.dialogDelete = true;
           this.userDeletedId = id;
@@ -242,14 +258,28 @@ export default {
         }else{
           this.editedUser.image = e;
         }
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+          this.userImg = reader.result;
+        })
+        reader.readAsDataURL(e);
       },
       saveUserChanges(){
         console.log(this.editedUser);
         this.editedUser = {};
       },
       async createUser(){
-        const res = await axios.post('/dashboard/users/create', this.newUser);
+        let fd = new FormData();
+        for(let key in this.newUser){
+          fd.append(key, this.newUser[key])
+        }
+
+        const res = await axios.post('/dashboard/users/create', fd);
         console.log(res);
+        if(res.status === 200){
+          alert('تم إنشاء المشرف بنجاح');
+          this.editDialog = false;
+        }
       },
       addUserProcess(){
         this.mode = 'create';
@@ -264,7 +294,8 @@ export default {
     watch: {
       editDialog(newVal){
         if(!newVal){
-          this.getUsers();
+          // this.getUsers();
+          this.getProfileData();
         }
       }
     },
