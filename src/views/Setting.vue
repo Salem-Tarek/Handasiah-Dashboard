@@ -18,6 +18,7 @@
               outlined
               label="Fav Icon"
               append-icon="mdi-camera"
+              accept="image/png"
             ></v-file-input>
           </v-col>
           <v-col cols="12" md="6" class="py-0">
@@ -148,7 +149,7 @@ export default {
       if(res.status === 200){
         this.overlay = false;
         // alert('تم حفظ البيانات بنجاح');
-        this.alertMaker('Settings Data Submited Successfully', 'تم حفظ البيانات بنجاح');
+        this.alertMaker('تم حفظ البيانات بنجاح');
       }
 
     },
@@ -163,11 +164,11 @@ export default {
     handleFavIcon(e){
       this.settings.favicon = e;
     },
-    alertMaker(titleEn, titleAr){
+    alertMaker(titleAr){
       Swal.fire({
         position: 'center',
         icon: 'success',
-        title: this.getLang === 'En' ? titleEn : titleAr,
+        title: titleAr,
         showConfirmButton: false,
         timer: 3000,
         didDestroy: () => {

@@ -1,6 +1,14 @@
 <template>
     <div>
       <h5 class="my-3">الميزة {{ `#${featNum}` }}</h5>
+      <v-overlay :value="overlay">
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          color="blue"
+          indeterminate
+        ></v-progress-circular>
+      </v-overlay>
       <v-form>
           <v-row>
             <v-col cols="12" md="6" class="pb-0">
@@ -41,8 +49,32 @@
                 label="المحتوى العربى"
               ></v-textarea>
             </v-col>
-            <v-col cols="12">
-              <v-text-field v-model="isFeatDataExist.icon" label="أيقونة الميزة" outlined></v-text-field>
+            <v-col cols="12" sm="6">
+              <v-select
+                @change="getTag"
+                :items="tags"
+                label="إختار تصنيف الأيقونة"
+                outlined
+                hide-details
+              ></v-select>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <v-select
+                :disabled="!icons.length"
+                @change="setSelectedIcon"
+                :items="icons"
+                item-text="name"
+                item-value="name"
+                label="إختار الأيقونة"
+                outlined
+                hide-details
+              ></v-select>
+            </v-col>
+            <v-col cols="10">
+              <v-text-field :disabled="true" v-model="featIcon" label="أيقونة الميزة" outlined></v-text-field>
+            </v-col>
+            <v-col cols="2">
+              <v-icon color="primary" x-large class="mt-1">{{ featIcon }}</v-icon>
             </v-col>
             <!-- <v-col cols="12">
               <div class="icons_wrapper">
@@ -57,6 +89,7 @@
 </template>
 
 <script>
+import axios from 'axios'
   export default {
     name:"Fearure",
     props:{
@@ -71,13 +104,77 @@
     data: () => ({
       icons: [],
       valid: false,
+      overlay: false,
       featuresData:{
         titleEn: '',
         titleAr: '',
         descriptionEn: '',
         descriptionAr: '',
-        icon: ''
+        icon: '',
       },
+      tags: [
+        "user",
+        "agriculture",
+        "alert",
+        "alpha-numeric",
+        "animal",
+        "arrange",
+        "arrow",
+        "audio",
+        "automotive",
+        "banking",
+        "battery",
+        "brand",
+        "phone",
+        "clothing",
+        "cloud",
+        "color",
+        "currency",
+        "database",
+        "date-time",
+        "developer-languages",
+        "device-tech",
+        "drawing-art",
+        "edit-modify",
+        "emoji",
+        "file-folder",
+        "food-drink",
+        "form",
+        "gaming",
+        "geographic-information-system",
+        "hardware-tools",
+        "health-beauty",
+        "holiday",
+        "home-automation",
+        "lock",
+        "math",
+        "medical",
+        "music",
+        "nature",
+        "navigation",
+        "notification",
+        "people-family",
+        "photography",
+        "places",
+        "printer",
+        "religion",
+        "science",
+        "settings",
+        "shape",
+        "shopping",
+        "social-media",
+        "sport",
+        "formatting",
+        "tooltip",
+        "transportation-flying",
+        "transportation-other",
+        "transportation-road",
+        "transportation-water",
+        "vector",
+        "video",
+        "view",
+        "weather",
+      ],
       title_content: {
         title:[
           v => !!v || 'العنوان مطلوب',
@@ -107,8 +204,28 @@
     computed: {
       isFeatDataExist(){
         return this.featData ? this.featData : this.featuresData
+      },
+      featIcon(){
+        return this.isFeatDataExist.icon;
       }
     },
+    methods: {
+      async getTag(e){
+        this.overlay = true;
+        console.log(e);
+        const res = await axios.get(`https://materialdesignicons.com/api/package/38EF63D0-4744-11E4-B3CF-842B2B6CFE1B?tag=${e}`);
+        console.log(res);
+        if(res.status === 200){
+          this.icons = res.data.icons;
+          this.overlay = false;
+        }
+      },
+      setSelectedIcon(e){
+        console.log(e);
+        this.isFeatDataExist.icon = `mdi-${e}`;
+        console.log(this.isFeatDataExist.icon);
+      }
+    }
   }
 </script>
 

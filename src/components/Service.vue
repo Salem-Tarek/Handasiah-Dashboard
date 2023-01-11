@@ -98,7 +98,6 @@
 <script>
 import axios from 'axios'
 import Swal from 'sweetalert2'
-import { mapGetters } from 'vuex'
 export default {
     name: "Service",
     props:{
@@ -195,7 +194,7 @@ export default {
                 ;
                 if(res.status === 200){
                     // alert('تم حذف صورة الخدمه') 
-                    this.alertMaker('Service Image Removed Successfully', 'تم حذف صورة الخدمة بنجاح');
+                    this.alertMaker('تم حذف صورة الخدمة بنجاح');
                     this.$emit('imgDeleted');
                 }
             }else{
@@ -205,11 +204,11 @@ export default {
                 this.services.currentServices.splice(index - this.services.existImgs.length, 1);
             }
         },
-        alertMaker(titleEn, titleAr){
+        alertMaker(titleAr){
             Swal.fire({
                 position: 'center',
                 icon: 'success',
-                title: this.getLang === 'En' ? titleEn : titleAr,
+                title: titleAr,
                 showConfirmButton: false,
                 timer: 3000,
                 didDestroy: () => {
@@ -222,7 +221,7 @@ export default {
         isServiceDataExist(){
             return this.serviceData ? this.serviceData : this.servicesData;
         },
-        ...mapGetters(['getLang'])
+        
     },
     watch:{
         'services.currentServices': {

@@ -85,7 +85,7 @@ export default {
           // console.log(service[key]);
           if(service[key] === "" || service[key] === null){
             // alert('يجب ملئ كل حقول الادخال')
-            this.alertMaker('All Fields Must Be Filled', 'يجب ملئ كل حقول الادخال');
+            this.alertMaker('يجب ملئ كل حقول الادخال');
             return;
           }
         }
@@ -112,7 +112,7 @@ export default {
       if(res.status === 200){
         this.overlay = false;
         // alert('تم إرسال الخدمات بنجاح')
-        this.alertMaker('Services Submited Successfully', 'تم إرسال الخدمات بنجاح');
+        this.alertMaker('تم إرسال الخدمات بنجاح');
       }
     },
     async getServicesPage(){
@@ -129,15 +129,15 @@ export default {
       if(res.status === 200){
         this.overlay = false;
         // alert('تم حذف الخدمة بنجاح');
-        this.alertMaker('Service Removed Successfully', 'تم حذف الخدمة بنجاح');
+        this.alertMaker('تم حذف الخدمة بنجاح');
         this.getServicesPage();
       }
     },
-    alertMaker(titleEn, titleAr){
+    alertMaker(titleAr){
       Swal.fire({
         position: 'center',
         icon: 'success',
-        title: this.getLang === 'En' ? titleEn : titleAr,
+        title: titleAr,
         showConfirmButton: false,
         timer: 3000,
         didDestroy: () => {

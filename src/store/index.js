@@ -5,11 +5,11 @@ import Swal from 'sweetalert2'
 
 Vue.use(Vuex);
 
-function alertMaker(titleEn, titleAr){
+function alertMaker(titleAr){
   Swal.fire({
     position: 'center',
     icon: 'success',
-    title: this.getLang === 'En' ? titleEn : titleAr,
+    title: titleAr,
     showConfirmButton: false,
     timer: 3000,
     // didDestroy: () => {
@@ -47,7 +47,7 @@ export default new Vuex.Store({
       state.user = null;
       localStorage.removeItem('userToken');
       // alert('Logged Out');
-      alertMaker('Logged Out Successfully', 'تم تسجيل الخروج بنجاح');
+      alertMaker('تم تسجيل الخروج بنجاح');
     },
   },
   actions: {
@@ -66,11 +66,11 @@ export default new Vuex.Store({
         await context.commit('setUser', res.data.data.accessToken);
         localStorage.setItem('userToken', res.data.data.accessToken);
         // alert('Logged in Successfully')
-        alertMaker('Logged in Successfully', 'تم تسجيل الدخول بنجاح');
+        alertMaker('تم تسجيل الدخول بنجاح');
         
       }else{
         // alert("Email or Password incorrect");
-        alertMaker('Email or Password incorrect', 'البريد الالكترونى او كلمة المرور غير صحيحه');
+        alertMaker('البريد الالكترونى او كلمة المرور غير صحيحه');
       }
     },
   },

@@ -261,11 +261,11 @@ export default {
           if(res.status === 200){
             this.overlay = false;
             // alert('Done')
-            this.alertMaker('Slider Images Submited Successfully', 'تم إرسال صور السليدر بنجاح')
+            this.alertMaker('تم إرسال صور السليدر بنجاح')
           }
         }else{
           // alert('No Changes')
-          this.alertMaker('No Changes Occur in Slider Images', 'لا يوجد تغيرات فى صور السليدر');
+          this.alertMaker('لا يوجد تغيرات فى صور السليدر');
         }
       },
       async deleteSliderImg(img, index){
@@ -275,7 +275,7 @@ export default {
           if(res.status === 200){
             this.overlay = false;
             // alert('Done') 
-            this.alertMaker('Slider Image Removed Successfully', 'تم حذف صورة السليدر بنجاح');
+            this.alertMaker('تم حذف صورة السليدر بنجاح');
             this.getHomePageData();
           }
         }else{
@@ -305,7 +305,7 @@ export default {
             // console.log(feat[key]);
             if(feat[key] === "" || feat[key] === null){
               // alert('يجب ملئ كل حقول الادخال')
-              this.alertMaker('All Fields Must Be Filled', 'يجب ملئ كل حقول الادخال');
+              this.alertMaker('يجب ملئ كل حقول الادخال');
               return;
             }
           }
@@ -314,7 +314,7 @@ export default {
         if(res.status === 200){
           this.overlay = false;
           // alert('تم حفظ المميزات بنجاح')
-            this.alertMaker('Features Submited Successfully', 'تم إرسال الميزات بنجاح');
+            this.alertMaker('تم إرسال الميزات بنجاح');
           this.getHomePageData();
           document.location.reload();
           // alert('Get The Data')
@@ -324,7 +324,7 @@ export default {
         const res = await axios.post('/dashboard/homePage/services/delete', {id: id});
         if(res.status === 200){
           // alert('تم حذف الميزة بنجاح')
-          this.alertMaker('Feature Removed Successfully', 'تم حذف الميزة بنجاح');
+          this.alertMaker('تم حذف الميزة بنجاح');
           this.getHomePageData();
         }
       },
@@ -337,7 +337,7 @@ export default {
         
         if(res.status === 200 && res2.status === 200){
           // alert('تم إرسال البيانات بنجاح');
-          this.alertMaker('About Us Information Submited Successfully', 'تم إرسال بيانات عننا بنجاح');
+          this.alertMaker('تم إرسال بيانات عننا بنجاح');
           this.overlay = false;
         }
       },
@@ -359,12 +359,12 @@ export default {
           if(res.status === 200){
             this.overlay = false;
             // alert('تم حفظ صور الشركات بنجاح')
-            this.alertMaker('Companies Images Submited Successfully', 'تم إرسال صور الشركات بنجاح')
+            this.alertMaker('تم إرسال صور الشركات بنجاح')
             this.getHomePageData();
           }
         }else{
           // alert('No Changes')
-          this.alertMaker('No Changes Occur in Companies Images', 'لا يوجد تغيرات فى صور الشركات');
+          this.alertMaker('لا يوجد تغيرات فى صور الشركات');
         }
       },
       async deleteCompanyImg(img, index){
@@ -374,7 +374,7 @@ export default {
           if(res.status === 200){
             this.overlay = false;
             // alert('تم حذف صورة الشركه')
-            this.alertMaker('Company Image Removed Successfully', 'تم حذف صورة الشركة بنجاح');
+            this.alertMaker('تم حذف صورة الشركة بنجاح');
             this.getHomePageData();
           }
         }else{
@@ -388,7 +388,7 @@ export default {
         this.overlay = true;
         const res = await axios.post('/dashboard/homePage/video/save', this.demoData);
         if(res.status === 200){
-          this.alertMaker('Video Data Submited Successfully', 'تم إرسال بيانات الفيديو بنجاح');
+          this.alertMaker('تم إرسال بيانات الفيديو بنجاح');
           this.overlay = false;
         }
       },
@@ -411,7 +411,7 @@ export default {
           this.companies.existImgs = res.data.data.workedCompanies.length ? [...res.data.data.workedCompanies] : [];
 
         }else{
-          this.alertMaker('Sorry, There is Something Wrong', 'عفوا يوجد شئ خاطئ');
+          this.alertMaker('عفوا يوجد شئ خاطئ');
         }
       },
       trackImgs(bindingArr, outputArr, nameInLocaleStorage){
@@ -441,11 +441,11 @@ export default {
           })
         }
       },
-      alertMaker(titleEn, titleAr){
+      alertMaker(titleAr){
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: this.getLang === 'En' ? titleEn : titleAr,
+          title: titleAr,
           showConfirmButton: false,
           timer: 3000,
           didDestroy: () => {

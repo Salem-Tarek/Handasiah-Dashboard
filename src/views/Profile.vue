@@ -8,7 +8,7 @@
     <v-dialog v-model="editDialog" max-width="500px">
     <v-card class="mx-auto py-3" max-width="500px">
       <v-card-title>
-        <span class="text-h5 subtitle-1">بيانات المشرف</span>
+        <h5>بيانات المشرف</h5>
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -124,6 +124,8 @@
 <script>
 import router from '../store/index.js';
 import axios from 'axios';
+import Swal from 'sweetalert2'
+
 export default {
     name: "Profile",
     data(){
@@ -163,7 +165,7 @@ export default {
         next()
       }else{
         next("/login")
-        this.alertMaker('You Have To Login First', 'يجب تسجيل الدخول اولا');
+        this.alertMaker('يجب تسجيل الدخول اولا');
       }
     },
     methods: {
@@ -177,7 +179,7 @@ export default {
         }
         const res = await axios.post('/dashboard/profile/update', fd);
         if(res.status === 200){
-          alert('تم تعديل البيانات بنجاح');
+          this.alertMaker('تم تعديل البيانات بنجاح');
           this.getProfileData();
           this.getUsers();
           this.editDialog = false;
@@ -216,7 +218,7 @@ export default {
         if(this.userDeletedId){
           const res = await axios.post('/dashboard/users/delete', {id: this.userDeletedId});
           if(res.status === 200){
-            alert('تم حذف المستخدم بنجاح')
+            this.alertMaker('تم حذف المستخدم بنجاح')
             this.dialogDelete = false;
             this.getUsers();
           }
@@ -279,6 +281,18 @@ export default {
       addUserProcess(){
         this.mode = 'create';
         this.editDialog = true;
+      },
+      alertMaker(titleAr){
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: titleAr,
+          showConfirmButton: false,
+          timer: 3000,
+          didDestroy: () => {
+            location.reload();
+          }
+        })
       }
     },
     async mounted(){

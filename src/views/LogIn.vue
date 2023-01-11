@@ -22,7 +22,7 @@
           ></v-text-field>
         </v-col>
         <v-col cols="12" class="d-flex justify-center">
-          <v-btn dark type="submit">submit</v-btn>
+          <v-btn dark type="submit">تسجيل الدخول</v-btn>
         </v-col>
       </v-row>
     </v-form>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import Swal from 'sweetalert2'
 
 export default {
@@ -58,26 +58,25 @@ export default {
     ...mapActions(["LogIn"]),
     async submitForm(){
       if(this.$refs.form.validate()){
-        const res = await this.LogIn(this.logInForm);
-        console.log(res); 
+        await this.LogIn(this.logInForm);
         try {
           await this.LogIn(this.logInForm);
           this.$router.push("/");
         } catch (error) {
           // alert("Email or Password incorrect")
-          this.alertMaker('Email or Password incorrect', 'البريد الالكترونى او كلمة المرور غير صحيحه');
+          this.alertMaker('البريد الالكترونى او كلمة المرور غير صحيحه');
         }
       }else{
         // alert('Please, Fill all Fields according to the rules');
-        this.alertMaker('Please, Fill all Fields according to the rules', 'من فضلك قم بملئ جميع حقول الإدخال طبقا لقواعد كل حقل');
+        this.alertMaker('من فضلك قم بملئ جميع حقول الإدخال طبقا لقواعد كل حقل');
       }
     },
-    alertMaker(titleEn, titleAr){
+    alertMaker(titleAr){
       Swal.fire({
         position: 'center',
         icon: 'success',
-        title: this.getLang === 'En' ? titleEn : titleAr,
-        showConfirmButton: false,
+        title: titleAr,
+        showConfirmButton: true,
         timer: 3000,
         // didDestroy: () => {
         //   location.reload();
@@ -85,9 +84,6 @@ export default {
       })
     }
   },
-  computed: {
-    ...mapGetters(['getLang'])
-  }
 };
 </script>
 

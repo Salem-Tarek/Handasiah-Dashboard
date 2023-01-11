@@ -267,16 +267,16 @@ export default {
       }
       if(res.status === 200){
         // alert('تم حذف الطلب بنجاح');
-        this.alertMaker('Order Removed Successfully', 'تم حذف الطلب بنجاح');
+        this.alertMaker('تم حذف الطلب بنجاح');
         this.getOrdersData()
       }
       this.dialogDelete = false;
     },
-    alertMaker(titleEn, titleAr){
+    alertMaker(titleAr){
       Swal.fire({
         position: 'center',
         icon: 'success',
-        title: this.getLang === 'En' ? titleEn : titleAr,
+        title: titleAr,
         showConfirmButton: false,
         timer: 3000,
         didDestroy: () => {
@@ -290,7 +290,7 @@ export default {
       next()
     }else{
       next("/login")
-      this.alertMaker('You Have To Login First', 'يجب تسجيل الدخول اولا');
+      this.alertMaker('يجب تسجيل الدخول اولا');
     }
   },
 }

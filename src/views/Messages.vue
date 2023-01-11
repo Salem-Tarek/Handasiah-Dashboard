@@ -132,7 +132,7 @@ export default {
         next()
         }else{
         next("/login")
-        this.alertMaker('You Have To Login First', 'يجب تسجيل الدخول اولا');
+        this.alertMaker('يجب تسجيل الدخول اولا');
         }
     },
     data(){
@@ -175,15 +175,15 @@ export default {
         this.dialogDelete = false;
         if(res.status === 200){
           // alert('تم حذف الرساله بنجاح');
-          this.alertMaker('Message Removed Successfully', 'تم حذف الرساله بنجاح');
+          this.alertMaker('تم حذف الرساله بنجاح');
           this.getMessages();
         }
       },
-      alertMaker(titleEn, titleAr){
+      alertMaker(titleAr){
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: this.getLang === 'En' ? titleEn : titleAr,
+          title: titleAr,
           showConfirmButton: false,
           timer: 3000,
           didDestroy: () => {

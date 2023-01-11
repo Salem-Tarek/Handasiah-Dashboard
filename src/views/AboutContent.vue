@@ -190,7 +190,7 @@ export default {
           if(res.status === 200){
             this.overlay = false;
             // alert('تم حفظ صور الشهادات')
-            this.alertMaker('Certificates Images Submited Successfully', 'تم إرسال صور الشهادات بنجاح');
+            this.alertMaker('تم إرسال صور الشهادات بنجاح');
           }
         }else{
           alert('No Changes')
@@ -204,7 +204,7 @@ export default {
             this.overlay = false;
             // alert('تم حذف صورة الشهادة')
             this.getAboutPageData();
-            this.alertMaker('Certificate Image Removed Successfully', 'تم حذف صورة الشهادة بنجاح');
+            this.alertMaker('تم حذف صورة الشهادة بنجاح');
           }
         }else{
           this.certificates.uploadedCertificatesImages.splice(index, 1);
@@ -227,11 +227,11 @@ export default {
           if(res.status === 200){
             this.overlay = false;
             // alert('تم حفظ صور الشركات')
-            this.alertMaker('Companies Images Submited Successfully', 'تم إرسال صور الشركات بنجاح');
+            this.alertMaker('تم إرسال صور الشركات بنجاح');
           }
         }else{
           // alert('No Changes')
-          this.alertMaker('No Changes Occur in Companies Images', 'لا يوجد تغيرات فى صور الشركات');
+          this.alertMaker('لا يوجد تغيرات فى صور الشركات');
         }
       },
       async deleteCompanyImg(img, index){
@@ -241,7 +241,7 @@ export default {
           if(res.status === 200){
             this.overlay = false;
             // alert('تم حذف صورة الشركه')
-            this.alertMaker('Company Image Removed Successfully', 'تم حذف صورة الشركة بنجاح');
+            this.alertMaker('تم حذف صورة الشركة بنجاح');
             this.getHomePageData();
           }
         }else{
@@ -256,14 +256,14 @@ export default {
         if(res.status === 200){
           this.overlay = false;
           // alert('تم حفظ كلمات عننا بنجاح')
-          this.alertMaker('About Us Content Submited Successfully', 'تم إرسال محتوى عننا بنجاح');
+          this.alertMaker('تم إرسال محتوى عننا بنجاح');
         }
       },
-      alertMaker(titleEn, titleAr){
+      alertMaker(titleAr){
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: this.getLang === 'En' ? titleEn : titleAr,
+          title: titleAr,
           showConfirmButton: false,
           timer: 3000,
           didDestroy: () => {
