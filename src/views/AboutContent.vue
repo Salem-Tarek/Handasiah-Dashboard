@@ -1,93 +1,101 @@
 <template>
     <v-container>
-        <h1 class="mb-4">محتوى صفحة عننا</h1>
-        <v-expansion-panels>
-            <v-expansion-panel>
-                <v-expansion-panel-header class="font-weight-medium">
-                  <h4>محتوى العنوان</h4>
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <v-form>
-                    <v-row>
-                      <v-col cols="12" md="6" class="pb-0">
-                        <v-textarea
-                          v-model="aboutData.titleEn"
-                          :rules="title_content.content"
-                          outlined
-                          no-resize
-                          name="input-7-4"
-                          label="المحتوى الانجليزى"
-                        ></v-textarea>
-                      </v-col>
-                      <v-col cols="12" md="6" class="pb-0">
-                        <v-textarea
-                          v-model="aboutData.titleAr"
-                          :rules="title_content.content"
-                          outlined
-                          no-resize
-                          name="input-7-4"
-                          label="المحتوى العربى"
-                        ></v-textarea>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-btn color="success" @click="submitAbout()" class="noLetterSpace">حفظ محتوى العنوان</v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-form>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-            <v-expansion-panel>
-                <v-expansion-panel-header class="font-weight-medium">
-                  <h4>الشهادات</h4>
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <v-form>
-                    <v-row>
-                      <v-col cols="12">
-                        <v-file-input v-model="certificates.currentCertificates" label="صور الشهادات" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
-                        <template v-if="certificates.uploadedCertificatesImages.length">
-                          <div class="mb-2 d-flex justify-space-between" v-for="(img, index) in certificates.uploadedCertificatesImages" :key="img.lastModified">
-                            <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
-                            <div class="actions">
-                              <v-icon class="red--text" @click="deleteCertificateImg(img, index)">mdi-delete</v-icon>
-                            </div>
+      <v-overlay :value="overlay">
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          color="blue"
+          indeterminate
+        ></v-progress-circular>
+      </v-overlay>
+      <h1 class="mb-4">محتوى صفحة عننا</h1>
+      <v-expansion-panels>
+          <v-expansion-panel>
+              <v-expansion-panel-header class="font-weight-medium">
+                <h4>محتوى العنوان</h4>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-form>
+                  <v-row>
+                    <v-col cols="12" md="6" class="pb-0">
+                      <v-textarea
+                        v-model="aboutData.titleEn"
+                        :rules="title_content.content"
+                        outlined
+                        no-resize
+                        name="input-7-4"
+                        label="المحتوى الانجليزى"
+                      ></v-textarea>
+                    </v-col>
+                    <v-col cols="12" md="6" class="pb-0">
+                      <v-textarea
+                        v-model="aboutData.titleAr"
+                        :rules="title_content.content"
+                        outlined
+                        no-resize
+                        name="input-7-4"
+                        label="المحتوى العربى"
+                      ></v-textarea>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-btn color="success" @click="submitAbout()" class="noLetterSpace">حفظ محتوى العنوان</v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
+              <v-expansion-panel-header class="font-weight-medium">
+                <h4>الشهادات</h4>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-form>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-file-input v-model="certificates.currentCertificates" label="صور الشهادات" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
+                      <template v-if="certificates.uploadedCertificatesImages.length">
+                        <div class="mb-2 d-flex justify-space-between" v-for="(img, index) in certificates.uploadedCertificatesImages" :key="img.lastModified">
+                          <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
+                          <div class="actions">
+                            <v-icon class="red--text" @click="deleteCertificateImg(img, index)">mdi-delete</v-icon>
                           </div>
-                        </template>
-                        <v-btn color="success" @click="submitCertificatesFunc()" class="mt-3 noLetterSpace">حفظ صور الشهادات</v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-form>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-            <v-expansion-panel>
-                <v-expansion-panel-header class="font-weight-medium">
-                  <h4>شركات تم العمل معها</h4>
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <v-form>
-                    <v-row>
-                      <v-col cols="12">
-                        <v-file-input v-model="companies.currentCompanies" label="صور الشركات" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
-                        <template v-if="companies.uploadedCompaniesImages.length">
-                          <div class="mb-2 d-flex justify-space-between" v-for="(img, index) in companies.uploadedCompaniesImages" :key="img.lastModified">
-                            <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
-                            <div class="actions">
-                              <v-icon class="red--text" @click="deleteCompanyImg(img, index)">mdi-delete</v-icon>
-                            </div>
+                        </div>
+                      </template>
+                      <v-btn color="success" @click="submitCertificatesFunc()" class="mt-3 noLetterSpace">حفظ صور الشهادات</v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
+              <v-expansion-panel-header class="font-weight-medium">
+                <h4>شركات تم العمل معها</h4>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-form>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-file-input v-model="companies.currentCompanies" label="صور الشركات" show-size outlined multiple append-icon="mdi-camera"></v-file-input>
+                      <template v-if="companies.uploadedCompaniesImages.length">
+                        <div class="mb-2 d-flex justify-space-between" v-for="(img, index) in companies.uploadedCompaniesImages" :key="img.lastModified">
+                          <div class="imgPreview" :style="{ 'background-image': `url(${img.image})` }"></div>
+                          <div class="actions">
+                            <v-icon class="red--text" @click="deleteCompanyImg(img, index)">mdi-delete</v-icon>
                           </div>
-                        </template>
-                        <v-btn color="success" @click="submitCompaniesFunc()" class="mt-3 noLetterSpace">حفظ صور الشركات</v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-form>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
-        </v-expansion-panels>
+                        </div>
+                      </template>
+                      <v-btn color="success" @click="submitCompaniesFunc()" class="mt-3 noLetterSpace">حفظ صور الشركات</v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-expansion-panel-content>
+          </v-expansion-panel>
+      </v-expansion-panels>
     </v-container>
 </template>
 
 <script>
-
+import Swal from 'sweetalert2'
 import axios from 'axios'
 export default {
     name: "AboutContent",
@@ -118,12 +126,15 @@ export default {
           ],
 
         },
+        overlay: false,
       }
     },
     methods:{
       async getAboutPageData(){
+        this.overlay = true;
         const res = await axios.get('/dashboard/aboutPage');
         if(res.status === 200){
+          this.overlay = false;
           this.aboutData = res.data.data.setting;
 
           this.certificates.uploadedCertificatesImages = res.data.data.certificates;
@@ -164,6 +175,7 @@ export default {
         }
       },
       async submitCertificatesFunc(){
+        this.overlay = true;
         let fd = new FormData();
         let uploadedImgs = [];
         uploadedImgs = this.certificates.existImgs.length ? [...this.certificates.existImgs, ...this.certificates.currentCertificates] : [...this.certificates.currentCertificates];
@@ -174,20 +186,25 @@ export default {
 
         if(this.certificates.uploadedCertificatesImages.length > this.certificates.existImgs.length){
           const res = await axios.post('/dashboard/aboutPage/certificates/save', fd);
-          console.log(res);
+          ;
           if(res.status === 200){
-            alert('تم حفظ صور الشهادات')
+            this.overlay = false;
+            // alert('تم حفظ صور الشهادات')
+            this.alertMaker('Certificates Images Submited Successfully', 'تم إرسال صور الشهادات بنجاح');
           }
         }else{
           alert('No Changes')
         }
       },
       async deleteCertificateImg(img, index){
+        this.overlay = true;
         if(img.id){
           const res = await axios.post('/dashboard/aboutPage/certificates/delete', {id: img.id});
           if(res.status === 200){
-            alert('تم حذف صورة الشهادة') 
+            this.overlay = false;
+            // alert('تم حذف صورة الشهادة')
             this.getAboutPageData();
+            this.alertMaker('Certificate Image Removed Successfully', 'تم حذف صورة الشهادة بنجاح');
           }
         }else{
           this.certificates.uploadedCertificatesImages.splice(index, 1);
@@ -195,6 +212,7 @@ export default {
         }
       },
       async submitCompaniesFunc(){
+        this.overlay = true;
         let fd = new FormData();
         let uploadedImgs = [];
         uploadedImgs = this.companies.existImgs.length ? [...this.companies.existImgs, ...this.companies.currentCompanies] : [...this.companies.currentCompanies];
@@ -205,19 +223,25 @@ export default {
 
         if(this.companies.uploadedCompaniesImages.length > this.companies.existImgs.length){
           const res = await axios.post('/dashboard/aboutPage/companie/save', fd);
-          console.log(res);
+          ;
           if(res.status === 200){
-            alert('تم حفظ صور الشركات')
+            this.overlay = false;
+            // alert('تم حفظ صور الشركات')
+            this.alertMaker('Companies Images Submited Successfully', 'تم إرسال صور الشركات بنجاح');
           }
         }else{
-          alert('No Changes')
+          // alert('No Changes')
+          this.alertMaker('No Changes Occur in Companies Images', 'لا يوجد تغيرات فى صور الشركات');
         }
       },
       async deleteCompanyImg(img, index){
+        this.overlay = true;
         if(img.id){
           const res = await axios.post('/dashboard/aboutPage/companie/delete', {id: img.id});
           if(res.status === 200){
-            alert('تم حذف صورة الشركه')
+            this.overlay = false;
+            // alert('تم حذف صورة الشركه')
+            this.alertMaker('Company Image Removed Successfully', 'تم حذف صورة الشركة بنجاح');
             this.getHomePageData();
           }
         }else{
@@ -226,12 +250,27 @@ export default {
         }
       },
       async submitAbout(){
+        this.overlay = true;
         const res = await axios.post('/dashboard/aboutPage/setting/save', this.aboutData);
-        console.log(res);
+        ;
         if(res.status === 200){
-          alert('تم حفظ كلمات عننا بنجاح')
+          this.overlay = false;
+          // alert('تم حفظ كلمات عننا بنجاح')
+          this.alertMaker('About Us Content Submited Successfully', 'تم إرسال محتوى عننا بنجاح');
         }
       },
+      alertMaker(titleEn, titleAr){
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: this.getLang === 'En' ? titleEn : titleAr,
+          showConfirmButton: false,
+          timer: 3000,
+          didDestroy: () => {
+            location.reload();
+          }
+        })
+      }
     },
     watch:{
       'certificates.currentCertificates': {

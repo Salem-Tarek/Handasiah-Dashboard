@@ -1,5 +1,13 @@
 <template>
   <v-container>
+    <v-overlay :value="overlay">
+      <v-progress-circular
+        :size="70"
+        :width="7"
+        color="blue"
+        indeterminate
+      ></v-progress-circular>
+    </v-overlay>
     <h1 class="mb-4">محتوى صفحات الخدمات</h1>
 
     <!-- If There is Services -->
@@ -32,6 +40,7 @@
 <script>
 import Service from '../components/Service.vue'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 export default {
   name: "ServicesContent",
@@ -45,6 +54,7 @@ export default {
       uploadedImgs: [],
       getServices: [],
       serviceBtn: true,
+      overlay: false,
     }
   },
   methods:{
@@ -62,20 +72,20 @@ export default {
       
       if(isEmpty){
         this.services.pop()
-      }else{
-        console.log(this.services);
       }
       
       this.serviceBtn = false;
     },
     async submitServices(){
+      this.overlay = true;
       this.getServicesData();
 
       for(let service of this.services){
         for(let key in service){
           // console.log(service[key]);
           if(service[key] === "" || service[key] === null){
-            alert('يجب ملئ كل حقول الادخال')
+            // alert('يجب ملئ كل حقول الادخال')
+            this.alertMaker('All Fields Must Be Filled', 'يجب ملئ كل حقول الادخال');
             return;
           }
         }
@@ -97,27 +107,47 @@ export default {
         }
       }
 
-      console.log(...fd);
-
       const res = await axios.post('/dashboard/servicesPage/Items/save', fd)
-      console.log(res);
+      ;
+      if(res.status === 200){
+        this.overlay = false;
+        // alert('تم إرسال الخدمات بنجاح')
+        this.alertMaker('Services Submited Successfully', 'تم إرسال الخدمات بنجاح');
+      }
     },
     async getServicesPage(){
-      const res = await axios.get('/dashboard/servicesPage')
-      console.log(res);
-      this.getServices = res.data.data.sort((a, b) => a.id - b.id);
-      console.log(this.getServices)
+      this.overlay = true;
+      const res = await axios.get('/dashboard/servicesPage');
+      if(res.status === 200){
+        this.overlay = false;
+        this.getServices = res.data.data.sort((a, b) => a.id - b.id);
+      }
     },
     async deleteService(id){
+      this.overlay = true;
       const res = await axios.post('/dashboard/servicesPage/Items/delete', {id: id});
-      console.log(res);
       if(res.status === 200){
-        alert('تم حذف الخدمة بنجاح')
+        this.overlay = false;
+        // alert('تم حذف الخدمة بنجاح');
+        this.alertMaker('Service Removed Successfully', 'تم حذف الخدمة بنجاح');
         this.getServicesPage();
       }
+    },
+    alertMaker(titleEn, titleAr){
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: this.getLang === 'En' ? titleEn : titleAr,
+        showConfirmButton: false,
+        timer: 3000,
+        didDestroy: () => {
+          location.reload();
+        }
+      })
     }
   },
   mounted(){
+    this.overlay = true;
     this.getServicesPage();
   }
 }

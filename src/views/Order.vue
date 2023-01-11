@@ -172,6 +172,8 @@
 <script>
 import router from '../store/index.js';
 import axios from 'axios';
+import Swal from 'sweetalert2'
+
 export default {
   name: "Order",
   data(){
@@ -231,14 +233,12 @@ export default {
         case 'survey' :
           res = await axios.get('/dashboard/ordersService');
           break;
-        default : 
-          alert('هذا الرابط غير موجود');
+        default :
           this.$route.push('/')
       }
       if(res.status === 200){
         this.orders = res.data.data.orders;
         this.overlay = false;
-        console.log(this.orders);
       }
     },
     editItem (item) {
@@ -263,13 +263,26 @@ export default {
           res = await axios.post('/dashboard/orders/delete', {id: this.editedItem.id});
           break;
         default : 
-          alert('هذا الرابط غير موجود');
           this.$route.push('/')
       }
       if(res.status === 200){
-        alert('تم حذف الطلب بنجاح')
+        // alert('تم حذف الطلب بنجاح');
+        this.alertMaker('Order Removed Successfully', 'تم حذف الطلب بنجاح');
+        this.getOrdersData()
       }
       this.dialogDelete = false;
+    },
+    alertMaker(titleEn, titleAr){
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: this.getLang === 'En' ? titleEn : titleAr,
+        showConfirmButton: false,
+        timer: 3000,
+        didDestroy: () => {
+          location.reload();
+        }
+      })
     }
   },
   beforeRouteEnter(to, from, next){
@@ -277,7 +290,7 @@ export default {
       next()
     }else{
       next("/login")
-      alert("You Have To LogIn First")
+      this.alertMaker('You Have To Login First', 'يجب تسجيل الدخول اولا');
     }
   },
 }

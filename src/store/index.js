@@ -1,10 +1,22 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from 'axios';
-
-import homePage from './modules/homePage'
+import Swal from 'sweetalert2'
 
 Vue.use(Vuex);
+
+function alertMaker(titleEn, titleAr){
+  Swal.fire({
+    position: 'center',
+    icon: 'success',
+    title: this.getLang === 'En' ? titleEn : titleAr,
+    showConfirmButton: false,
+    timer: 3000,
+    // didDestroy: () => {
+    //   location.reload();
+    // }
+  })
+}
 
 export default new Vuex.Store({
   state: {
@@ -29,11 +41,13 @@ export default new Vuex.Store({
       }
     },
     setUser(state, token){
-      state.user = token
+      state.user = token;
     },
     logOut(state){
       state.user = null;
-      alert('Logged Out')
+      localStorage.removeItem('userToken');
+      // alert('Logged Out');
+      alertMaker('Logged Out Successfully', 'تم تسجيل الخروج بنجاح');
     },
   },
   actions: {
@@ -50,14 +64,14 @@ export default new Vuex.Store({
       const res = await axios.post('/dashboard/login', user);
       if(res.status === 200){
         await context.commit('setUser', res.data.data.accessToken);
-        alert('Logged in Successfully')
+        localStorage.setItem('userToken', res.data.data.accessToken);
+        // alert('Logged in Successfully')
+        alertMaker('Logged in Successfully', 'تم تسجيل الدخول بنجاح');
+        
       }else{
-        alert("Email or Password incorrect")
+        // alert("Email or Password incorrect");
+        alertMaker('Email or Password incorrect', 'البريد الالكترونى او كلمة المرور غير صحيحه');
       }
-      localStorage.setItem('userToken', res.data.data.accessToken)
     },
   },
-  modules: {
-    homePage,
-  }
 });

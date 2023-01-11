@@ -123,6 +123,7 @@
 <script>
 import router from '../store/index.js';
 import axios from 'axios';
+import Swal from 'sweetalert2'
 
 export default {
     name: "Messages",
@@ -131,55 +132,68 @@ export default {
         next()
         }else{
         next("/login")
-        alert("You Have To LogIn First")
+        this.alertMaker('You Have To Login First', 'يجب تسجيل الدخول اولا');
         }
     },
     data(){
-        return {
-            headers: [
-                { text: 'الاسم',value: 'fullname' },
-                { text: 'الايميل', value: 'email' },
-                { text: 'الواتس اب', value: 'whatsapp' },
-                { text: 'رقم الموبايل', value: 'phone' },
-                { text: 'الموضوع', value: 'subject' },
-                { text: 'عرض و حذف', value: 'actions' },
-            ],
-            dialog: false,
-            overlay: false,
-            dialogDelete: false,
-            editedIndex: -1,
-            messages: [],
-            editedItem: {},
-        }
+      return {
+        headers: [
+          { text: 'الاسم',value: 'fullname' },
+          { text: 'الايميل', value: 'email' },
+          { text: 'الواتس اب', value: 'whatsapp' },
+          { text: 'رقم الموبايل', value: 'phone' },
+          { text: 'الموضوع', value: 'subject' },
+          { text: 'عرض و حذف', value: 'actions' },
+        ],
+        dialog: false,
+        overlay: false,
+        dialogDelete: false,
+        editedIndex: -1,
+        messages: [],
+        editedItem: {},
+      }
     },
     methods: {
-        async getMessages(){
-            this.overlay = true;
-            const res = await axios.get('/dashboard/contactUs');
-            if(res.status === 200){
-              this.messages = res.data.data.contactUs;
-              this.overlay = false;
-            }
-        },
-        editItem (item) {
-          this.editedItem = Object.assign({}, item)
-          this.dialog = true
-        },
-        deleteItem (item) {
-          this.editedItem = Object.assign({}, item)
-          this.dialogDelete = true
-        },
-        async deleteItemConfirm(){
-          const res = await axios.post('/dashboard/contactUs/delete', {id: this.editedItem.id});
-          this.dialogDelete = false;
+      async getMessages(){
+          this.overlay = true;
+          const res = await axios.get('/dashboard/contactUs');
           if(res.status === 200){
-            alert('تم حذف الرساله بنجاح');
-            this.getMessages();
+            this.messages = res.data.data.contactUs;
+            this.overlay = false;
           }
+      },
+      editItem (item) {
+        this.editedItem = Object.assign({}, item)
+        this.dialog = true
+      },
+      deleteItem (item) {
+        this.editedItem = Object.assign({}, item)
+        this.dialogDelete = true
+      },
+      async deleteItemConfirm(){
+        const res = await axios.post('/dashboard/contactUs/delete', {id: this.editedItem.id});
+        this.dialogDelete = false;
+        if(res.status === 200){
+          // alert('تم حذف الرساله بنجاح');
+          this.alertMaker('Message Removed Successfully', 'تم حذف الرساله بنجاح');
+          this.getMessages();
         }
+      },
+      alertMaker(titleEn, titleAr){
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: this.getLang === 'En' ? titleEn : titleAr,
+          showConfirmButton: false,
+          timer: 3000,
+          didDestroy: () => {
+            location.reload();
+          }
+        })
+      }
     },
     mounted(){
-        this.getMessages()
+      this.getMessages()
     }
 }
 </script>

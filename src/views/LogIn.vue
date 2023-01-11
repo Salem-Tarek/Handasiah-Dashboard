@@ -30,7 +30,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex';
+import Swal from 'sweetalert2'
+
 export default {
   name: "LogIn",
   data(){
@@ -56,16 +58,35 @@ export default {
     ...mapActions(["LogIn"]),
     async submitForm(){
       if(this.$refs.form.validate()){
+        const res = await this.LogIn(this.logInForm);
+        console.log(res); 
         try {
           await this.LogIn(this.logInForm);
           this.$router.push("/");
         } catch (error) {
-          alert("Email or Password incorrect")
+          // alert("Email or Password incorrect")
+          this.alertMaker('Email or Password incorrect', 'البريد الالكترونى او كلمة المرور غير صحيحه');
         }
       }else{
-        alert('Please, Fill all Fields according to the rules')
+        // alert('Please, Fill all Fields according to the rules');
+        this.alertMaker('Please, Fill all Fields according to the rules', 'من فضلك قم بملئ جميع حقول الإدخال طبقا لقواعد كل حقل');
       }
+    },
+    alertMaker(titleEn, titleAr){
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: this.getLang === 'En' ? titleEn : titleAr,
+        showConfirmButton: false,
+        timer: 3000,
+        // didDestroy: () => {
+        //   location.reload();
+        // }
+      })
     }
+  },
+  computed: {
+    ...mapGetters(['getLang'])
   }
 };
 </script>

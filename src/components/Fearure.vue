@@ -57,8 +57,6 @@
 </template>
 
 <script>
-// import icons from '../assets/icons.js'
-
   export default {
     name:"Fearure",
     props:{
@@ -111,10 +109,6 @@
         return this.featData ? this.featData : this.featuresData
       }
     },
-    // mounted(){
-    //   this.icons = icons;
-    //   console.log(this.icons);
-    // }
   }
 </script>
 

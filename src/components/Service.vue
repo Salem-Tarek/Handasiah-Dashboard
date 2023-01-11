@@ -97,6 +97,8 @@
 
 <script>
 import axios from 'axios'
+import Swal from 'sweetalert2'
+import { mapGetters } from 'vuex'
 export default {
     name: "Service",
     props:{
@@ -140,19 +142,6 @@ export default {
         }
     },
     methods:{
-        // getImgsWithUrl(bindingArr, outputArr, nameInLocaleStorage){
-        //     for(let img of bindingArr){
-        //     const reader = new FileReader();
-        //     reader.addEventListener('load', () => {
-        //         outputArr.push({image: reader.result});
-        //         // Store This Array below in both localStorage and Store
-        //         localStorage.setItem(nameInLocaleStorage, JSON.stringify(outputArr))
-        //     })
-        //     reader.readAsDataURL(img);
-        //     }
-        //     // bindingArr.splice(0,bindingArr.length)
-        //     document.activeElement.blur();
-        // },
         trackImgs(bindingArr, outputArr, nameInLocaleStorage){
             console.log(this.services.existImgs);
             alert('stop')
@@ -203,10 +192,11 @@ export default {
         async deleteServiceImg(img, index){
             if(img.id){
                 const res = await axios.post('/dashboard/servicesPage/Items/delete/image', {id: img.id});
-                console.log(res);
+                ;
                 if(res.status === 200){
-                    alert('تم حذف صورة الخدمه') 
-                    this.$emit('imgDeleted')
+                    // alert('تم حذف صورة الخدمه') 
+                    this.alertMaker('Service Image Removed Successfully', 'تم حذف صورة الخدمة بنجاح');
+                    this.$emit('imgDeleted');
                 }
             }else{
                 this.services.existImgs = this.services.existImgs.filter(img => Object.keys(img).length > 1);
@@ -214,12 +204,25 @@ export default {
                 this.services.uploadedServicesImages.splice(index, 1);
                 this.services.currentServices.splice(index - this.services.existImgs.length, 1);
             }
-        },  
+        },
+        alertMaker(titleEn, titleAr){
+            Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: this.getLang === 'En' ? titleEn : titleAr,
+                showConfirmButton: false,
+                timer: 3000,
+                didDestroy: () => {
+                  location.reload();
+                }
+            })
+        }
     },
     computed: {
         isServiceDataExist(){
             return this.serviceData ? this.serviceData : this.servicesData;
-        }
+        },
+        ...mapGetters(['getLang'])
     },
     watch:{
         'services.currentServices': {
@@ -247,11 +250,8 @@ export default {
     },
     mounted(){
         if(this.serviceData){
-            // alert('Here is')
             this.services.existImgs = this.serviceData.media;
-            console.log(this.services.existImgs);
             this.services.uploadedServicesImages = this.serviceData.media;
-            // console.log(this.serviceData);
         }
     },
 }

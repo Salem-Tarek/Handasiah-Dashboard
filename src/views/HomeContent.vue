@@ -1,5 +1,13 @@
 <template>
     <v-container>
+      <v-overlay :value="overlay">
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          color="blue"
+          indeterminate
+        ></v-progress-circular>
+      </v-overlay>
         <h1 class="mb-4">محتوى الصفحة الرئيسية</h1>
         <v-expansion-panels>
             <v-expansion-panel>
@@ -182,6 +190,7 @@
 <script>
 import Fearure from '../components/Fearure.vue'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 export default {
     name: "HomeContent",
@@ -231,11 +240,13 @@ export default {
           ],
 
         },
+        overlay: false,
       }
     },
     methods:{
       // Slider Functions
       async submitSliderImgsFunc(){
+        this.overlay = true;
         let fd = new FormData();
         let uploadedImgs = [];
         uploadedImgs = this.slider.existImgs.length ? [...this.slider.existImgs, ...this.slider.sliderImages] : [...this.slider.sliderImages];
@@ -246,19 +257,25 @@ export default {
 
         if(this.slider.uploadedSliderImages.length > this.slider.existImgs.length){
           const res = await axios.post('/dashboard/homePage/slider/save', fd);
-          console.log(res);
+          ;
           if(res.status === 200){
-            alert('Done')
+            this.overlay = false;
+            // alert('Done')
+            this.alertMaker('Slider Images Submited Successfully', 'تم إرسال صور السليدر بنجاح')
           }
         }else{
-          alert('No Changes')
+          // alert('No Changes')
+          this.alertMaker('No Changes Occur in Slider Images', 'لا يوجد تغيرات فى صور السليدر');
         }
       },
       async deleteSliderImg(img, index){
+        this.overlay = true;
         if(img.id){
           const res = await axios.post('/dashboard/homePage/slider/delete', {id: img.id});
           if(res.status === 200){
-            alert('Done') 
+            this.overlay = false;
+            // alert('Done') 
+            this.alertMaker('Slider Image Removed Successfully', 'تم حذف صورة السليدر بنجاح');
             this.getHomePageData();
           }
         }else{
@@ -278,6 +295,7 @@ export default {
         }
       },
       async submitFeatures(){
+        this.overlay = true;
         this.getFeatureData();
         // // Remove the Last Element Which is the current Feat Component
         // this.features.pop();
@@ -286,14 +304,17 @@ export default {
           for(let key in feat){
             // console.log(feat[key]);
             if(feat[key] === "" || feat[key] === null){
-              alert('يجب ملئ كل حقول الادخال')
+              // alert('يجب ملئ كل حقول الادخال')
+              this.alertMaker('All Fields Must Be Filled', 'يجب ملئ كل حقول الادخال');
               return;
             }
           }
         }
         const res = await axios.post('/dashboard/homePage/services/save', {Services: this.features});
         if(res.status === 200){
-          alert('تم حفظ المميزات بنجاح')
+          this.overlay = false;
+          // alert('تم حفظ المميزات بنجاح')
+            this.alertMaker('Features Submited Successfully', 'تم إرسال الميزات بنجاح');
           this.getHomePageData();
           document.location.reload();
           // alert('Get The Data')
@@ -302,21 +323,28 @@ export default {
       async deleteFeat(id){
         const res = await axios.post('/dashboard/homePage/services/delete', {id: id});
         if(res.status === 200){
-          alert('تم حذف الميزة بنجاح')
+          // alert('تم حذف الميزة بنجاح')
+          this.alertMaker('Feature Removed Successfully', 'تم حذف الميزة بنجاح');
           this.getHomePageData();
         }
       },
 
       // Aboutus Words Functions
       async submitWords(){
+        this.overlay = true;
         const res = await axios.post('/dashboard/homePage/aboutSomeWords/save', this.aboutData);
         const res2 = await axios.post('/dashboard/homePage/mission/save', this.mission);
-        console.log(res);
-        console.log(res2);
+        
+        if(res.status === 200 && res2.status === 200){
+          // alert('تم إرسال البيانات بنجاح');
+          this.alertMaker('About Us Information Submited Successfully', 'تم إرسال بيانات عننا بنجاح');
+          this.overlay = false;
+        }
       },
       
       // Companies functions
       async submitCompaniesFunc(){
+        this.overlay = true;
         let fd = new FormData();
         
         this.uploadedImgs = this.companies.existImgs.length ? [...this.companies.existImgs, ...this.companies.currentCompanies] : [...this.companies.currentCompanies];
@@ -327,20 +355,26 @@ export default {
 
         if(this.companies.uploadedCompaniesImages.length > this.companies.existImgs.length){
           const res = await axios.post('/dashboard/aboutPage/companie/save', fd);
-          console.log(res);
+          ;
           if(res.status === 200){
-            alert('تم حفظ صور الشركات بنجاح')
+            this.overlay = false;
+            // alert('تم حفظ صور الشركات بنجاح')
+            this.alertMaker('Companies Images Submited Successfully', 'تم إرسال صور الشركات بنجاح')
             this.getHomePageData();
           }
         }else{
-          alert('No Changes')
+          // alert('No Changes')
+          this.alertMaker('No Changes Occur in Companies Images', 'لا يوجد تغيرات فى صور الشركات');
         }
       },
       async deleteCompanyImg(img, index){
+        this.overlay = true;
         if(img.id){
           const res = await axios.post('/dashboard/aboutPage/companie/delete', {id: img.id});
           if(res.status === 200){
-            alert('تم حذف صورة الشركه')
+            this.overlay = false;
+            // alert('تم حذف صورة الشركه')
+            this.alertMaker('Company Image Removed Successfully', 'تم حذف صورة الشركة بنجاح');
             this.getHomePageData();
           }
         }else{
@@ -351,14 +385,20 @@ export default {
 
       // Video Functions
       async submitDemoData(){
+        this.overlay = true;
         const res = await axios.post('/dashboard/homePage/video/save', this.demoData);
-        console.log(res);
+        if(res.status === 200){
+          this.alertMaker('Video Data Submited Successfully', 'تم إرسال بيانات الفيديو بنجاح');
+          this.overlay = false;
+        }
       },
 
       // General Functions
       async getHomePageData(){
         const res = await axios.get('/dashboard/homePage');
         if(res.status === 200){
+          this.overlay = false;
+
           this.demoData = res.data.data.video;
           this.aboutData = res.data.data.aboutSomeWords;
           this.mission = res.data.data.mission;
@@ -371,7 +411,7 @@ export default {
           this.companies.existImgs = res.data.data.workedCompanies.length ? [...res.data.data.workedCompanies] : [];
 
         }else{
-          alert('There is SomeThing Wrong')
+          this.alertMaker('Sorry, There is Something Wrong', 'عفوا يوجد شئ خاطئ');
         }
       },
       trackImgs(bindingArr, outputArr, nameInLocaleStorage){
@@ -401,6 +441,18 @@ export default {
           })
         }
       },
+      alertMaker(titleEn, titleAr){
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: this.getLang === 'En' ? titleEn : titleAr,
+          showConfirmButton: false,
+          timer: 3000,
+          didDestroy: () => {
+            location.reload();
+          }
+        })
+      }
     },
     watch:{
       'slider.sliderImages': {
@@ -421,6 +473,7 @@ export default {
       },
     },
      mounted(){
+      this.overlay = true;
       this.getHomePageData();
     }
 }

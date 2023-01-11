@@ -132,7 +132,7 @@ export default {
         editDialog: false,
         submitBtn: true,
         userImg: '../assets/default.jpg',
-        dataShow: null,
+        dataShow: {},
         userData: {
           name: "",
           password: "",
@@ -163,7 +163,7 @@ export default {
         next()
       }else{
         next("/login")
-        alert("You Have To LogIn First")
+        this.alertMaker('You Have To Login First', 'يجب تسجيل الدخول اولا');
       }
     },
     methods: {
@@ -199,27 +199,22 @@ export default {
       },
       async getProfileData(){
         const res = await axios.get('/dashboard/profile');
-        console.log(res);
         if(res.status === 200){
           this.dataShow = res.data.data;
-          console.log(this.dataShow.image);
           this.userData.name = res.data.data.name;
           this.userData.image = res.data.data.image;
         }
       },
       async getUsers(){
         const res = await axios.get('/dashboard/users');
-        console.log(res);
         if(res.status === 200){
           this.users = res.data.data.users;
-          console.log(this.users);
         }
       },
       async deleteItemConfirm(){
         console.log(this.userDeletedId);
         if(this.userDeletedId){
           const res = await axios.post('/dashboard/users/delete', {id: this.userDeletedId});
-          console.log(res);
           if(res.status === 200){
             alert('تم حذف المستخدم بنجاح')
             this.dialogDelete = false;
@@ -275,10 +270,10 @@ export default {
         }
 
         const res = await axios.post('/dashboard/users/create', fd);
-        console.log(res);
         if(res.status === 200){
           alert('تم إنشاء المشرف بنجاح');
           this.editDialog = false;
+          this.getUsers();
         }
       },
       addUserProcess(){
